@@ -1,0 +1,73 @@
+EquationSpace.setDiscretization(disc
+    self.discretization = disc
+
+NewField()
+    return field(disc, some param)
+
+
+Field
+    disc
+
+
+VecEquation(eq)
+
+F1 * F2 + alpha * F3 = 0 (eval F1 and F2 find F3)
+
+MathExpr operator+(field)
+
+FieldMult(F1, F2)
+FieldMult.eval()
+    return F1.eval() * F2.eval() -> FieldValue
+
+FieldScale(a = alpha, b = 0, field=F3)
+    eval()
+    return F3.eval() * alpha + b
+
+FieldSum(FieldMult, FieldScale)
+    eval()
+    return field.eval() + field.eval()
+
+MathExpr + alpha * F3
+
+MathExpr.eval -> field
+
+Equation(mathExpr)
+
+A = F.operator.laplace() -> operator
+
+operator
+    eval() -> fieldValue
+    MathExpr trans() FieldMult(disc.Laplace.mat, F)
+
+LesResult = LESSolve(A=F.operator.laplace().formula().A, -f.eval)
+expr = FieldAssign(F, LesStep)
+
+expr.eval()
+F.values - > updated
+
+<!-- lambda d^2/dxdx F + f = dF/dt -->
+BCon con1 = EquationSpace->bcs->dirichlet(DomainId(1), 0)
+BCon con2 = EquationSpace->bcs->dirichlet(DomainId(2), 10)
+
+F = EquationSpace->NewScalarField()
+F.setBC(con1)
+F.setBC(con2)
+
+dFdt = F.time().derivative(order = 1, scheme = Euler)
+
+(F(t+1) - f(T) )/ dt = dF/dt
+
+lambda d^2/dxdx F + f = (F(t+1) - f(T) )/ dt
+dFdt.A
+dFdf.b
+
+calcLes = LESSolve(
+    A=F.latest().operator().laplace().formula().A - dFdt.latest().A, 
+    b = dFdt.latest().b -f
+)
+fUpdate = FieldTimeStepAssign(F, LesResult)
+Algorithm algorithm(steps = [calcLes, fUpdate])
+
+TimeIntegrator integrator(t1 = 0.0, tend = 100.0, step = 0.1)
+integrator.run(algorithm = algorithm)
+

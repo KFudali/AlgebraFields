@@ -151,7 +151,7 @@ LF = Fi.operator.laplace
 bc = EquationSpace.bcs->NeumannCondition(domains = ..., value = 0)
 Fi.applyBC(bc)
 eq = Equation(LF -(3 * TU.time_step / 2) * ( Ux + Uy ))
-Step2 = ESSolve(field = Fi, Step2)
+Step2 = LESSolve(field = Fi, Step2)
 Step3 = P.update(P + Fi - lambda * (Ux.evaluate + Uy.evaluate))
 
 Now we have 3 steps for calculating transient NS without non-linear
