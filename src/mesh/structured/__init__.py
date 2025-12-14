@@ -1,1 +1,2 @@
 from .structured_grid2D import StructuredGrid2D
+from .structured_gridND import StructuredGridND

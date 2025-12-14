@@ -1,4 +1,5 @@
-from .field import Field
+from .field import Field, Space
 
-
-class ScalarField(Field): pass
+class ScalarField(Field):
+    def __init__(self, space: Space):
+        super().__init__(space)

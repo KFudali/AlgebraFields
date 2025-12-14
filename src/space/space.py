@@ -1,6 +1,7 @@
-from . import field
-from . import discretization
-
-class EquationSpace():
-
-    def new_scalar_field(self) -> field.ScalarField: pass
+from discretization import Discretization
+class Space():
+    def __init__(
+        self,
+        discretization: Discretization
+    ):
+        self._disc = discretization
