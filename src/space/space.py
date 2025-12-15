@@ -5,3 +5,6 @@ class Space():
         discretization: Discretization
     ):
         self._disc = discretization
+
+    @property
+    def discretization(self) -> Discretization: return self._disc

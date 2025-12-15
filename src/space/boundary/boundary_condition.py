@@ -1,3 +1,5 @@
+from abc import ABC, abstractmethod
+import numpy as np
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from ..space_bound import SpaceBound, Space
@@ -11,5 +13,10 @@ class BoundaryCondition(SpaceBound):
     ):
         super().__init__(space)
         self._boundary = boundary
+    
+    @abstractmethod
+    def apply_linear(self, A: np.ndarray, b: np.ndarray): pass
+
+
 
 BC = BoundaryCondition

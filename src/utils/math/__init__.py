@@ -1,1 +1,1 @@
-from .linear_operator import LinOp
+from .linsys import LinOp
