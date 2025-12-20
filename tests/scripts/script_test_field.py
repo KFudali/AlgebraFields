@@ -27,14 +27,12 @@ F.apply_bc(bc_top)
 rhs = eq_space.fields.scalar()
 
 # ## lambda d^2/dxdx F = f ##
-les = eq_space.systems.les(
+solve_les = expr.solve.LESSolve(
     F.operator.laplace(),
     rhs.value()
 )
+[solve_les.apply_bc(bc) for bc in F.bcs]
 
-[les.apply_bc(bc) for bc in F.bcs]
-
-calc_LES = expr.solve.LESSolve(system)
-# f_update = expr.field.FieldUpdate(field = F, value = calc_LES)
-# f_update.eval()
+f_update = expr.FieldUpdate(field = F, value = solve_les.solve())
+f_update.eval()
 # plot(F)

@@ -1,5 +1,8 @@
 from abc import abstractmethod, ABC
 
-class Expr(ABC):
+from ..space.field_bound import FieldBound
+from ..space.field.field_value import FieldValue
+
+class Expr(FieldBound, ABC):
     @abstractmethod
-    def eval(self): pass
+    def eval(self) -> FieldValue: pass

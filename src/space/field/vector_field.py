@@ -1,5 +1,8 @@
-from .field import Field, Space
+from .field import Field
+from ..field_bound import FieldDescriptor
+from ..space import Space
 
-class VectorField(Field):
+class ScalarField(Field):
     def __init__(self, space: Space):
-        super().__init__(space)
+        span = space.shape[0]
+        super().__init__(FieldDescriptor(space, span))
