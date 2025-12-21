@@ -1,11 +1,11 @@
 import space
-import expr
-import mesh
-import domain
-import discretization
 
-grid = mesh.structured.StructuredGridND(shape=(100, 100), spacing=(0.01, 0.01))
-fd_domain = domain.fd.FDDomain(grid)
+import model.geometry.grid as grid
+import model.discretization as discretization
+import space.expr as expr
+
+fd_grid = grid.StructuredGridND(shape=(100, 100), spacing=(0.01, 0.01))
+fd_domain = discretization.fd.FDDomain(fd_grid)
 
 left, right = fd_domain.grid_boundaries(ax = 0)
 top, bot = fd_domain.grid_boundaries(ax = 1)
@@ -33,6 +33,6 @@ solve_les = expr.solve.LESSolve(
 )
 [solve_les.apply_bc(bc) for bc in F.bcs]
 
-f_update = expr.FieldUpdate(field = F, value = solve_les.solve())
+f_update = expr.field.FieldUpdate(field = F, value = solve_les.solve())
 f_update.eval()
 # plot(F)
