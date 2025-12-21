@@ -1,10 +1,10 @@
 import numpy as np
 
 from .linear_operator import LinearOperator
-from space.field import Field
+from space.base import AbstractField
 
 class GradientOperator(LinearOperator):
-    def __init__(self, field: Field):
+    def __init__(self, field: AbstractField):
         super().__init__(field)
 
     @property

@@ -1,1 +1,1 @@
-from .linsys import LinOp
+from .linsys import LinSys

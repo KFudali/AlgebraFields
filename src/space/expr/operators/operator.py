@@ -1,11 +1,11 @@
 from ..field import FieldExpr
-import space.field
+from space.base import AbstractField
 
 class Operator(FieldExpr):
-    def __init__(self, field: space.field.Field):
+    def __init__(self, field: AbstractField):
         super().__init__()
         self._field = field
 
     @property
-    def field(self) -> space.field.Field:
+    def field(self) -> AbstractField:
         return self._field

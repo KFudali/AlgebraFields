@@ -2,7 +2,6 @@ from model.discretization import Discretization
 from .base import Space, bc
 
 from .field_factory import FieldFactory
-from . import field
 
 class EquationSpace(Space):
     def __init__(

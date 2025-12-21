@@ -1,12 +1,12 @@
 from abc import ABC, abstractmethod
 import numpy as np
 
+from space.base import AbstractField
 from .operator import Operator
-from space.field import Field
 from model.discretization import Discretization
 
 class LinearOperator(Operator, ABC):
-    def __init__(self, field: Field):
+    def __init__(self, field: AbstractField):
         super().__init__(field)
 
     @property

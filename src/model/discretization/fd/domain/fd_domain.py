@@ -55,7 +55,7 @@ class FDDomain(Domain):
 
     def mark_as_boundary(self, ids: np.ndarray) -> FDBoundary:
         boundary_id = BoundaryId(self._next_boundary_id)
-        boundary = FDBoundary(ids)
+        boundary = FDBoundary(boundary_id, ids)
         self._boundaries[boundary_id] = boundary
         self._next_boundary_id = self._next_boundary_id + 1
         return boundary

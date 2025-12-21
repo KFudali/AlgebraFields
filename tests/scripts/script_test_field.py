@@ -1,5 +1,4 @@
 import space
-
 import model.geometry.grid as grid
 import model.discretization as discretization
 import space.expr as expr

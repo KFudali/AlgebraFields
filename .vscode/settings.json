@@ -1,4 +1,6 @@
 {
+    "python.terminal.useEnvFile": true,
+    "python.envFile": "${workspaceFolder}/.env",
     "latex-workshop.latex.tools": [
         {
             "name": "latexmk",
