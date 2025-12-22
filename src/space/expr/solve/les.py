@@ -1,3 +1,4 @@
+from typing import Callable
 import numpy as np
 import functools
 
@@ -13,7 +14,6 @@ class LESSolve(FieldExpr):
         rhs: FieldValue
     ):
         super().__init__(linear_operator.desc)
-        assert linear_operator.same_shape(rhs)
         self._linear_operator = linear_operator
         self._rhs = rhs
         self._bcs = set[BC]()
@@ -23,7 +23,7 @@ class LESSolve(FieldExpr):
 
     def assemble(self):
         A = self._linear_operator.stencil
-        b = self._rhs.eval()
+        b = self._rhs.eval().ravel()
         for bc in self._bcs:
             bc.apply_linear(A, b)
         return A, b
@@ -31,4 +31,11 @@ class LESSolve(FieldExpr):
     def solve(self) -> FieldValue:
         A, b = self.assemble()
         value_callback = functools.partial(np.linalg.solve, A, b)
-        return FieldValue(self.desc, value_callback)
+        def solution_callback():
+            value = value_callback()
+            return value.reshape(self._rhs.shape)
+        return FieldValue(self.desc, solution_callback)
+    
+    def eval(self) -> np.ndarray:
+        A, b = self.assemble()
+        return np.linalg.solve(A, b).reshape(self._rhs.shape)

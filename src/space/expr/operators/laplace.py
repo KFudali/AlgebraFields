@@ -9,7 +9,7 @@ class LaplaceOperator(LinearOperator):
 
     @property
     def stencil(self) -> np.ndarray:
-        return self._field.disc
+        return self._field.disc.stencils.laplace()
     
     def eval(self):
         return np.dot(self.stencil, self._field.raw_value())

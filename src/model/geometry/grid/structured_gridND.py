@@ -74,7 +74,6 @@ class StructuredGridND:
             bd[(axis, "min")] = self.left_ids(axis)
             bd[(axis, "max")] = self.right_ids(axis)
         return bd
-# ...existing code...
 
     @property
     def boundary(self):
@@ -91,10 +90,6 @@ class StructuredGridND:
             bd[(axis, "min")] = self.boundary_ids(axis, "min")
             bd[(axis, "max")] = self.boundary_ids(axis, "max")
         return bd
-
-    # -----------------------------
-    # Interior IDs
-    # -----------------------------
 
     @property
     def interior_ids(self) -> np.ndarray:

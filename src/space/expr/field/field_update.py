@@ -8,7 +8,8 @@ class FieldUpdate(FieldExpr):
         field: AbstractField, 
         value: FieldValue
     ):
-        super().__init__()
+        super().__init__(field.desc)
+        assert field.same_shape(value)
         self.field = field
         self.value = value
         assert self.field.same_shape(value)

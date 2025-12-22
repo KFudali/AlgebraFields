@@ -16,6 +16,10 @@ class FieldObject(SpaceBound):
         else: return False
 
     @property
+    def shape(self) -> tuple[int, ...]:
+        return self.space.disc.shape
+
+    @property
     def desc(self) -> FieldDescriptor: return self._field_descriptor
 
     @property

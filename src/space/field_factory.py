@@ -8,6 +8,8 @@ class FieldFactory(SpaceBound):
     ):
         super().__init__(space)
     
-    def scalar(self) -> ScalarField: pass
-    
-    def vector(self) -> VectorField: pass
+    def scalar(self) -> ScalarField:
+        return ScalarField(self._space)
+
+    def vector(self) -> VectorField:
+        return VectorField(self._space)
