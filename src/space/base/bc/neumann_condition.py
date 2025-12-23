@@ -15,6 +15,6 @@ class NeumannBC(BoundaryCondition):
         self.value = value
 
     def apply_linear(self, A: np.ndarray, b: np.ndarray):
-        self.space.disc.bcs.dirichlet.apply_linear(
+        self.space.disc.bcs.neumann.apply_linear(
             A, b, self.value, self._boundary
         )

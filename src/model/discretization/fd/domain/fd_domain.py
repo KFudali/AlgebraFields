@@ -42,8 +42,8 @@ class FDDomain(Domain):
         for ax in range(self._grid.ndim):
             left = self._grid.left_ids(axis=ax)
             right = self._grid.right_ids(axis=ax)
-            left_id = self.mark_as_boundary(left)
-            right_id = self.mark_as_boundary(right)
+            left_id = self.mark_as_boundary(left, ax, 1)
+            right_id = self.mark_as_boundary(right, ax, -1)
             self._grid_boundaries[ax] = (left_id, right_id)
 
     def mark_as_subdomain(self, ids: np.ndarray) -> FDSubDomain:
@@ -53,9 +53,14 @@ class FDDomain(Domain):
         self._next_subdomain_id = self._next_subdomain_id + 1
         return subdomain
 
-    def mark_as_boundary(self, ids: np.ndarray) -> FDBoundary:
+    def mark_as_boundary(
+        self, 
+        ids: np.ndarray,
+        ax: int,
+        inward_dir: int,
+    ) -> FDBoundary:
         boundary_id = BoundaryId(self._next_boundary_id)
-        boundary = FDBoundary(boundary_id, ids)
+        boundary = FDBoundary(self._grid, boundary_id, ids, ax, inward_dir)
         self._boundaries[boundary_id] = boundary
         self._next_boundary_id = self._next_boundary_id + 1
         return boundary

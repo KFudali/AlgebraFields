@@ -3,7 +3,7 @@ import model.geometry.grid as grid
 import model.discretization as discretization
 import space.expr as expr
 
-fd_grid = grid.StructuredGridND(shape=(10, 10), spacing=(0.01, 0.01))
+fd_grid = grid.StructuredGridND(shape=(4, 4), spacing=(0.01, 0.01))
 fd_domain = discretization.fd.FDDomain(fd_grid)
 
 top, bot = fd_domain.grid_boundaries(ax = 0)
@@ -12,10 +12,10 @@ left, right = fd_domain.grid_boundaries(ax = 1)
 fd_disc = discretization.fd.FDDiscretization(fd_domain)
 eq_space = space.EquationSpace(fd_disc)
 
-bc_left = eq_space.bcs.dirichlet(left, value = 10)
 bc_right = eq_space.bcs.dirichlet(right, value = 0)
-bc_top = eq_space.bcs.dirichlet(top, value = 0)
-bc_bot = eq_space.bcs.dirichlet(bot, value = 0)
+bc_left = eq_space.bcs.dirichlet(left, value = 10)
+bc_top = eq_space.bcs.neumann(top, value = 0)
+bc_bot = eq_space.bcs.neumann(bot, value = 0)
 
 F = eq_space.fields.scalar()
 F.apply_bc(bc_left)
@@ -34,3 +34,4 @@ solve_les = expr.solve.LESSolve(
 
 f_update = expr.field.FieldUpdate(field = F, value = solve_les.solve())
 f_update.eval()
+print('success!')

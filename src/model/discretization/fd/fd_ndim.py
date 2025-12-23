@@ -33,7 +33,7 @@ class FDDiscretization(Discretization[FDDomain]):
         return self._operators
 
     @property
-    def bcs(self) -> FDOperators:
+    def bcs(self) -> FDDiscreteBCs:
         return self._bcs
 
     @property

@@ -9,10 +9,21 @@ class FDNeumannBC(DiscreteNeumannBC):
         super().__init__()
 
     def apply_linear(
-        A: np.ndarray, b: np.ndarray, value: float, boundary: FDBoundary
+        self, A: np.ndarray, b: np.ndarray, value: float, boundary: FDBoundary
     ):
-        ids = boundary.ids
-        A[ids, :] = 0.0
-        A[:, ids] = 0.0
-        A[ids, ids] = 1.0
-        b[ids] = value
+        axis = boundary.axis
+        inward_dir = boundary.inward_dir
+        h = boundary.grid.ax_spacing(axis)
+        shape = boundary.grid.shape
+
+        for i in boundary.ids:
+            A[i, :] = 0.0
+
+            idx = list(np.unravel_index(i, shape))
+            idx_in = idx.copy()
+            idx_in[axis] += inward_dir
+            j = np.ravel_multi_index(idx_in, shape)
+
+            A[i, i] = -inward_dir / h
+            A[i, j] =  inward_dir / h
+            b[i] = value
