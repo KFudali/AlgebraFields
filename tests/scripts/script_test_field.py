@@ -34,5 +34,3 @@ solve_les = expr.solve.LESSolve(
 
 f_update = expr.field.FieldUpdate(field = F, value = solve_les.solve())
 f_update.eval()
-print('success')
-# plot(F)
