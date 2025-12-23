@@ -3,6 +3,7 @@ import numpy as np
 from typing import TypeVar, Generic
 from .stencils import Stencils
 from .operators import DiscreteOperators
+from .boundaries import DiscreteBCs
 import model.domain
 
 DomainType = TypeVar("DomainType", bound=model.domain.Domain)
@@ -26,6 +27,10 @@ class Discretization(ABC, Generic[DomainType]):
     @property
     @abstractmethod
     def operators(self) -> DiscreteOperators: pass
+
+    @property
+    @abstractmethod
+    def bcs(self) -> DiscreteBCs: pass
 
     @property
     @abstractmethod
