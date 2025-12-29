@@ -15,4 +15,4 @@ class FieldUpdate(FieldExpr):
         assert self.field.same_shape(value)
 
     def eval(self):
-        self.field.set_raw_value(self.value.eval())
+        self.field.raw_value.set(self.value.eval())

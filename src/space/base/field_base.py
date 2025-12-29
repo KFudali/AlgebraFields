@@ -1,21 +1,19 @@
-from abc import ABC, abstractmethod
-from space.base import FieldObject, FieldDescriptor
+from space.base import FieldObject
+from .field_value_buffer import FieldValueBuffer
 from model.discretization import Discretization
-import numpy as np
 
-class AbstractField(FieldObject, ABC):
+class AbstractField(FieldObject):
     def __init__(
-        self, field_descriptor: FieldDescriptor
+        self, 
+        value_buffer: FieldValueBuffer
     ):
-        super().__init__(field_descriptor)
+        super().__init__(value_buffer.desc)
+        self._value = value_buffer
 
     @property
-    @abstractmethod
     def disc(self) -> Discretization:
         return self.space.disc
-
-    @abstractmethod
-    def raw_value(self) -> np.ndarray: pass
-
-    @abstractmethod
-    def set_raw_value(self, raw_value: np.ndarray) -> bool: pass
+    
+    @property
+    def raw_value(self) -> FieldValueBuffer:
+        return self._value

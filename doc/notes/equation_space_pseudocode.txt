@@ -63,11 +63,11 @@ dFdf.b
 
 calcLes = LESSolve(
     A=F.latest().operator().laplace().formula().A - dFdt.latest().A, 
-    b = dFdt.latest().b -f
+    b = dFdt.latest() -f
 )
+
 fUpdate = FieldTimeStepAssign(F, LesResult)
 Algorithm algorithm(steps = [calcLes, fUpdate])
 
 TimeIntegrator integrator(t1 = 0.0, tend = 100.0, step = 0.1)
 integrator.run(algorithm = algorithm)
-
