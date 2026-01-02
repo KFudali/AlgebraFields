@@ -1,6 +1,6 @@
-from .. import Field
-from ...base import FieldDescriptor, AbstractField
-from ...time import TimeSeries, TimeStep
+from ..base import Field
+from space.base import FieldDescriptor, AbstractField
+from space.time import TimeSeries, TimeStep
 
 from .history_buffer import HistoryBuffer
 from .transient_value_buffer import TransientValueBuffer

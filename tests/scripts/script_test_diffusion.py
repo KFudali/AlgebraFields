@@ -51,3 +51,27 @@ algorithm = Algorithm([les_step, field_update_step, progress_ts_step])
 
 integrator = TimeIntegrator(time_series)
 integrator.run(algorithm)
+
+# Centralized time design
+tw = eq_space.current_time_window()
+# dFdte = eq_space.fields.time.derivatives.explicit.euler(field=F, order=1)
+dFdti = eq_space.fields.time.derivatives.implicit.euler(field=F, order=1)
+F.initialize(0, ts = time_series.first)
+dFdti.initialize(0, ts = time_series.first)
+
+solve_les = expr.solve.LESSolve(
+    dFdti.at(tw).linop()  * lam * F.at(tw).operator.laplace(),
+    rhs.value()
+)
+[solve_les.apply_bc(bc) for bc in F.bcs]
+f_update = expr.field.FieldUpdate(field = F, value = solve_les.solve())
+
+les_step = Step(solve_les)
+field_update_step = Step(f_update)
+algorithm = Algorithm(
+    [les_step, field_update_step]
+)
+
+integrator = ConstTimeStepIntegrator(start = 0.0, end = 100.0, dt = 0.01)
+integrator.run(algorithm)
+

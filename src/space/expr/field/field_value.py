@@ -1,8 +1,9 @@
 import numpy as np
 from typing import Callable
-from space.base import FieldObject, FieldDescriptor
+from .field_expr import FieldExpr
+from space.base import FieldDescriptor
 
-class FieldValue(FieldObject):
+class FieldValue(FieldExpr):
     def __init__(
         self, 
         field_desc: FieldDescriptor,

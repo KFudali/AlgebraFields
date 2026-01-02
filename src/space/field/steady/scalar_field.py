@@ -1,5 +1,5 @@
 from space.base import FieldDescriptor,  Space
-from .field import Field
+from ..base import Field
 from .steady_value_buffer import SteadyValueBuffer
 
 class ScalarField(Field):

@@ -1,9 +1,7 @@
-import numpy as np
-
-from space.base import FieldDescriptor, AbstractField, bc, FieldValueBuffer
+from space.base import  AbstractField, bc, FieldValueBuffer
 from model.discretization import Discretization
 
-from ...expr.field import FieldValue
+from space.expr.field import FieldValue
 from .field_operator_factory import FieldOperatorFactory
 
 class Field(AbstractField):

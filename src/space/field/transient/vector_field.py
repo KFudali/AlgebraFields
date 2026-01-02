@@ -1,6 +1,6 @@
-from space.base import FieldDescriptor,  Space
-from .transient import TransientField
-from ..time import TimeSeries
+from space.base import FieldDescriptor, Space
+from space.time import TimeSeries
+from .transient_field import TransientField
 
 class VectorTransientField(TransientField):
     def __init__(

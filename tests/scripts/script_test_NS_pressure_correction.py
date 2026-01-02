@@ -46,10 +46,10 @@ dU_hat_dt = eq_space.time.derivative.imex.standard(order = 2)
 ni = eq_space.scalar(0.01)
 
 #------------------------------------------------#
-A = dU_hat_dt.at(ts).linop() + U_hat.at(ts).operator.laplace()
-rhs = p.at(prev_ts).operator.grad() + f.at(ts)
-u_hat_les = expr.solve.LESSolve(A, rhs)
-[u_hat_les.apply_bc(bc) for bc in U_hat.bcs]
+A = dU_hat_dt.at(ts).linop() + Op.Laplace(U_hat.at(ts))
+rhs = Op.Grad(p.at(prev_ts)) + f.at(ts)
+system = LESSystem(A, rhs, bcs = F.bcs)
+u_hat_les = expr.solve.LESSolve(system)
 U_hat_update = U_hat.at(ts).update(u_hat_les.solve())
 #------------------------------------------------#
 A = fi.operator.laplace()
