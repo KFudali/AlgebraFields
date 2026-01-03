@@ -1,7 +1,7 @@
 import numpy as np
-from space.field.transient import TransientField
-from space.field.base import Field
-from space.time import TimeStep
+from spacer.field.transient import TransientField
+from spacer.field.base import Field
+from spacer.time import TimeStep
 
 class ExplicitTimeDerivative(TransientField):
     def __init__(
@@ -89,7 +89,7 @@ FieldValue()
         return self._getter()
 
 FieldUpdate()
-    def __init__(self, value, setter):
+    def __init__(self, field, value):
         self._field = Field
         self._value = value
 
