@@ -10,7 +10,7 @@ class GetterExpression(Expression):
         super().__init__(shape)
         self._getter = getter
 
-    def eval(self) -> np.ndarray:
+    def _eval(self) -> np.ndarray:
         value = self._getter()
         msg = (
             "Value getter used for creating this expression does not match field shape."

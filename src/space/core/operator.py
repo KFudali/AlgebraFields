@@ -5,4 +5,4 @@ from .shapebound import ShapeBound
 
 class Operator(ShapeBound, ABC): 
     @abstractmethod 
-    def apply(self, array: np.ndarray, out: np.ndarray): pass
+    def _apply(self, array: np.ndarray, out: np.ndarray): pass

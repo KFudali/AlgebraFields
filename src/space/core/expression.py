@@ -5,6 +5,6 @@ from .shapebound import ShapeBound
 
 class Expression(ShapeBound, ABC):
     @abstractmethod
-    def eval(self) -> np.ndarray:
+    def _eval(self) -> np.ndarray:
         pass
 

@@ -1,18 +1,17 @@
-from spacer.base import SpaceBound, Space
 from model.domain.boundary import Boundary
 
+from ..shapebound import ShapeBound, FieldShape
 from .dirichlet_condition import DirichletBC
 from .neumann_condition import NeumannBC
 
-class BCFactory(SpaceBound):
+class BCFactory(ShapeBound):
     def __init__(
-        self, 
-        space: Space
+        self, shape: FieldShape
     ):
-        super().__init__(space)
+        super().__init__(shape)
     
     def dirichlet(self, boundary: Boundary, value: float) -> DirichletBC:
-        return DirichletBC(self.space, boundary, value)
+        return DirichletBC(self.shape, boundary, value)
     
     def neumann(self, boundary: Boundary, value: float) -> NeumannBC:
-        return NeumannBC(self.space, boundary, value)
+        return NeumannBC(self.shape, boundary, value)

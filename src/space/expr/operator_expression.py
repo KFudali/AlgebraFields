@@ -4,7 +4,7 @@ from space.core.shapebound import ShapeBound
 from space.core.operator import Operator
 from space.core.expression import Expression
 
-class OperatorExpression(Expression):
+class ApplyOperatorExpr(Expression):
     def __init__(self, op: Operator, expr: Expression):
         ShapeBound.assert_compatible(op, expr)
         super().__init__(op.shape)
@@ -14,5 +14,5 @@ class OperatorExpression(Expression):
     def _eval(self) -> np.ndarray:
         x = self._expr.eval()
         out = np.zeros_like(x)
-        self._op.apply(x, out)
+        self._op._apply(x, out)
         return out

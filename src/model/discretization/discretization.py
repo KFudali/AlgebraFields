@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
 import numpy as np
 from typing import TypeVar, Generic
-from .stencils import Stencils
 from .operators import DiscreteOperators
 from .boundaries import DiscreteBCs
 import model.domain
@@ -31,7 +30,3 @@ class Discretization(ABC, Generic[DomainType]):
     @property
     @abstractmethod
     def bcs(self) -> DiscreteBCs: pass
-
-    @property
-    @abstractmethod
-    def stencils(self) -> Stencils: pass

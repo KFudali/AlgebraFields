@@ -1,10 +1,10 @@
 import numpy as np
 
-
-from space.core import Expression, AbstractField, FieldShape, time
+from space.core import Expression, AbstractField, FieldShape
 from .field_update import FieldUpdate
 from .field_value import FieldValue
 from .value_buffer import ValueBuffer
+
 
 class Field(AbstractField):
     def __init__(self, shape: FieldShape):
