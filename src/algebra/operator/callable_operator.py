@@ -9,7 +9,7 @@ class CallableOperator(Operator):
         self,
         input_shape: tuple[int, ...],
         output_shape: tuple[int, ...],
-        apply: Callable[[np.ndarray, np.ndarray],],
+        apply: Callable[[np.ndarray, np.ndarray], None],
     ):
         super().__init__(input_shape, output_shape)
         self._apply_callable = apply

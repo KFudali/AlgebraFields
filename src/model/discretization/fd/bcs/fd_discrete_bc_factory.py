@@ -1,4 +1,4 @@
-from model.core.discrete_bcs import DiscreteBCs
+from model.discretization.core.discrete_bcs import DiscreteBCs
 from .fd_discrete_dirichlet import FDDirichletBC
 from .fd_discrete_neumann import FDNeumannBC
 

@@ -1,7 +1,7 @@
 
 import numpy as np
 
-from model.core import DiscreteNeumannBC
+from model.discretization.core import DiscreteNeumannBC
 from algebra.expression import Expression
 from algebra.operator import Operator, CallableOperator
 

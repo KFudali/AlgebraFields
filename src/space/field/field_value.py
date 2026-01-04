@@ -1,5 +1,6 @@
 import numpy as np
-from space.core import Expression, AbstractField
+from space.core import AbstractField
+from algebra import Expression
 
 class FieldValue(Expression):
     def __init__(

@@ -1,6 +1,6 @@
 import numpy as np
 
-from model.core import DiscreteDirichletBC
+from model.discretization.core import DiscreteDirichletBC
 from ..domain import FDBoundary
 from algebra.operator import Operator, CallableOperator
 

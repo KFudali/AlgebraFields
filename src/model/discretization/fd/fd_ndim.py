@@ -1,4 +1,4 @@
-from model.core.discretization import Discretization
+from model.discretization.core import Discretization
 from .domain import FDDomain
 from .fd_operators import FDOperators
 from .bcs import FDDiscreteBCs

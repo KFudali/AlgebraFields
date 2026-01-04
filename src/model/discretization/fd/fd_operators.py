@@ -1,4 +1,4 @@
-from model.core.discretization import DiscreteOperators
+from model.discretization.core import DiscreteOperators
 from model.geometry.grid import StructuredGridND
 
 from .domain import FDDomain
