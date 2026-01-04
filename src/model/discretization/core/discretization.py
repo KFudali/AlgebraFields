@@ -1,27 +1,20 @@
 from abc import ABC, abstractmethod
-import numpy as np
 from typing import TypeVar, Generic
-from .operators import DiscreteOperators
-from .boundaries import DiscreteBCs
-import model.domain
 
-DomainType = TypeVar("DomainType", bound=model.domain.Domain)
+from .discrete_operators import DiscreteOperators
+from .discrete_bcs import DiscreteBCs
+from model.domain import Domain
+
+DomainType = TypeVar("DomainType", bound=Domain)
 
 class Discretization(ABC, Generic[DomainType]):
     @property
     @abstractmethod
     def shape(self) -> tuple[int, ...]: pass
 
-    @abstractmethod
-    def zeros(self) -> np.ndarray: pass
-
     @property
     @abstractmethod
     def domain(self) -> DomainType: pass
-    
-    @property
-    @abstractmethod
-    def dim(self) -> int: pass
     
     @property
     @abstractmethod

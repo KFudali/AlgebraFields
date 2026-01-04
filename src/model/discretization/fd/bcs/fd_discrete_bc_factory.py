@@ -1,4 +1,4 @@
-from ...boundaries import DiscreteBCs
+from model.core.discrete_bcs import DiscreteBCs
 from .fd_discrete_dirichlet import FDDirichletBC
 from .fd_discrete_neumann import FDNeumannBC
 

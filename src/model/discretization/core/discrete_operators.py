@@ -1,9 +1,10 @@
 from abc import ABC, abstractmethod
-import numpy as np
+
+from algebra.operator import Operator
 
 class DiscreteOperators(ABC):
     @abstractmethod
-    def laplace(self, field_values: np.ndarray, laplace: np.ndarray): pass
+    def laplace(self) -> Operator: pass
     
     # @abstractmethod
     # def gradient(self, field_values: np.ndarray, grad: np.ndarray): pass

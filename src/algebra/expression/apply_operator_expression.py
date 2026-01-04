@@ -1,18 +1,16 @@
 import numpy as np
 
-from space.core.shapebound import ShapeBound
-from space.core.operator import Operator
-from space.core.expression import Expression
+from .expression import Expression
+from algebra.operator.operator import Operator
 
 class ApplyOperatorExpr(Expression):
     def __init__(self, op: Operator, expr: Expression):
-        ShapeBound.assert_compatible(op, expr)
-        super().__init__(op.shape)
+        super().__init__(op.output_shape)
         self._op = op
         self._expr = expr
 
     def _eval(self) -> np.ndarray:
         x = self._expr.eval()
         out = np.zeros_like(x)
-        self._op._apply(x, out)
+        self._op.apply(x, out)
         return out

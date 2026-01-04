@@ -1,4 +1,4 @@
-from model.discretization import Discretization
+from model.discretization import Discretization, DiscreteBCs
 
 class Space():
     def __init__(self, discretization: Discretization):
@@ -8,6 +8,3 @@ class Space():
     def discretization(self) -> Discretization:
         return self._discretization
     
-    @property
-    def dim(self) -> int: 
-        return self._discretization.dim
