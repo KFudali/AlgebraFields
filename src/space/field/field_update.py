@@ -10,5 +10,5 @@ class FieldUpdate():
         self._field = field
         self._expr = expr
 
-    def _eval(self):
-        self._field._set_current(self._expr._eval())
+    def eval(self):
+        self._field._set_current(self._expr.eval())
