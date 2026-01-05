@@ -6,6 +6,7 @@ class ValueBuffer():
         self._saved_steps = 1
         self._shape = shape
         self._values = list[np.ndarray]()
+        self._values.append(np.zeros(shape))
 
     @property
     def shape(self) -> tuple[int, ...]:

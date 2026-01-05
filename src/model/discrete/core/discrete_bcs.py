@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from .discrete_bc import DiscreteDirichletBC, DiscreteNeumannBC
+from .bcs import DiscreteDirichletBC, DiscreteNeumannBC
 from model.domain import Boundary
 
 class DiscreteBCs(ABC):

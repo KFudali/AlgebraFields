@@ -1,6 +1,6 @@
-from .core import Space, FieldShape
+from .core import Space
 from .field import Field
-from model.discretization import Discretization, DiscreteBCs, DiscreteOperators
+from model.discrete import Discretization, DiscreteBCs, DiscreteOperators
 
 
 
@@ -8,9 +8,8 @@ class EquationSpace(Space):
     def __init__(self, discretization: Discretization):
         super().__init__(discretization)
 
-
-    def field(self) -> Field:
-        return Field(FieldShape(space=self, components=1))
+    def field(self, components: int = 1) -> Field:
+        return Field(space=self, components=components)
 
     @property
     def operators(self) -> DiscreteOperators:

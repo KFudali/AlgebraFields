@@ -1,3 +1,3 @@
 from .field import AbstractField
-from .shapebound import ShapeBound, ShapeMismatch, FieldShape
+from .fieldshaped import FieldShaped, ShapeMismatch
 from .space import Space

@@ -5,21 +5,21 @@ from model.geometry.grid import StructuredGridND
 class FDBoundary(Boundary):
     def __init__(
         self,
-        grid: StructuredGridND,
         boundary_id: BoundaryId,
         ids: np.ndarray,
         ax: int,
         inward_dir: int,
+        grid_spacing: float
     ):
         super().__init__(boundary_id)
-        self._grid = grid
         self._ids = ids
         self._ax = ax
         self._inward_dir = inward_dir
+        self._spacing = grid_spacing
     
     @property
-    def grid(self) -> StructuredGridND:
-        return self._grid
+    def grid_spacing(self) -> float:
+        return self._spacing
 
     @property
     def axis(self) -> int:
@@ -31,3 +31,4 @@ class FDBoundary(Boundary):
 
     @property
     def ids(self) -> np.ndarray: return self._ids
+    

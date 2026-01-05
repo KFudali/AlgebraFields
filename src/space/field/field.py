@@ -1,22 +1,24 @@
 import numpy as np
 
-from algebra.expression import Expression
-from space.core import AbstractField, FieldShape
-from model.discretization import DiscreteBC
 from model.domain import Boundary
+from model.discrete.core.bcs import DiscreteBC
+
+from space.core import AbstractField, Space
+from algebra.expression import Expression
+
 from .field_update import FieldUpdate
 from .field_value import FieldValue
 from .value_buffer import ValueBuffer
 
 
 class Field(AbstractField):
-    def __init__(self, shape: FieldShape):
-        super().__init__(shape)
-        self._value = ValueBuffer(self.array_shape)
+    def __init__(self, space: Space, components: int):
+        super().__init__(space, components)
+        self._value = ValueBuffer(self.shape)
         self._bcs = dict[Boundary, DiscreteBC]()
 
     def _get_current(self) -> np.ndarray:
-        return self._value.get()
+        return self._value.get() 
 
     def _set_current(self, value: np.ndarray): 
         self._value.set_current(value)

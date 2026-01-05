@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
 import numpy as np
-from .shapebound import ShapeBound
+from .fieldshaped import FieldShaped
 
-class AbstractField(ShapeBound, ABC):
+class AbstractField(FieldShaped, ABC):
     @abstractmethod
     def _set_current(self, value: np.ndarray): pass
 

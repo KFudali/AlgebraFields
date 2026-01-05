@@ -1,0 +1,38 @@
+comp/
+    algorithm
+    integrators
+    time/
+
+algebra/
+    operator/
+    system/
+    time/
+    expression
+
+model/
+    geometry
+    mesh
+    discrete/
+        core/
+            domain
+            bcs
+            operators
+            discretization.py
+        fd/
+            domain
+            bcs
+            operators
+            fd_discretization.py
+
+
+space/
+    core/
+        abstract_field.py
+        spacebound.py
+        space.py
+    time/
+    
+    field/
+        field_value.py <-Expression
+        field_update.py <-Step
+        field.py

@@ -1,34 +1,30 @@
-from dataclasses import dataclass
 from .space import Space
 
 class ShapeMismatch(Exception): pass
 
-@dataclass(frozen=True)
-class FieldShape():
-    space: Space
-    components: int
-
-class ShapeBound():
-    def __init__(self, shape: FieldShape):
-        self._shape = shape
+class FieldShaped():
+    def __init__(self, space: Space, components: int):
+        self._space = space
+        self._components = components
 
     @property
     def space(self) -> Space:
-        return self._shape.space
+        return self._space
 
     @property
     def components(self) -> int:
-        return self._shape.components
+        return self._components
 
     @property
-    def shape(self) -> FieldShape: return self._shape
+    def shape(self) -> tuple[int, ...]:
+        return (self.components, *self.space.discretization.shape)
 
     @property
-    def array_shape(self) -> tuple[int, ...]:
+    def shape(self) -> tuple[int, ...]:
         return (self.components, *self.space.discretization.shape)
 
     @staticmethod
-    def assert_compatible(a: "ShapeBound", b: "ShapeBound", error_msg: str = ""):
+    def assert_compatible(a: "FieldShaped", b: "FieldShaped", error_msg: str = ""):
         if a.space != b.space:
             raise ShapeMismatch(f"Space mismatch: {error_msg}")
         if a.components != b.components:
@@ -38,5 +34,5 @@ class ShapeBound():
         if self.array_shape != other:
             raise ShapeMismatch(
                 error_msg + \
-                f"\nSelf shape: {self.array_shape}\n Other shape: {other}."
+                f"\nSelf shape: {self.shape}\n Other shape: {other}."
             )

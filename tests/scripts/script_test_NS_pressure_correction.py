@@ -1,15 +1,15 @@
 import spacer
 import model.geometry.grid as grid
-import model.discretization as discretization
+import model.discrete as discrete
 import spacer.expr as expr
 
 fd_grid = grid.StructuredGridND(shape=(4, 4), spacing=(0.01, 0.01))
-fd_domain = discretization.fd.FDDomain(fd_grid)
+fd_domain = discrete.fd.FDDomain(fd_grid)
 
 top, bot = fd_domain.grid_boundaries(ax = 0)
 left, right = fd_domain.grid_boundaries(ax = 1)
 
-fd_disc = discretization.fd.FDDiscretization(fd_domain)
+fd_disc = discrete.fd.FDDiscretization(fd_domain)
 eq_space = spacer.EquationSpace(fd_disc)
 
 time_series = ConstStepTimeSeries(0.0, 100.0, 0.01)
