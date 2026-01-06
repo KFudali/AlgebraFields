@@ -9,7 +9,13 @@ class ApplyOperatorExpr(Expression):
         self._op = op
         self._expr = expr
 
-    def _eval(self) -> np.ndarray:
+    @property
+    def operator(self) -> Operator: return self._op
+
+    @property
+    def expr(self) -> Expression: return self._expr
+
+    def eval(self) -> np.ndarray:
         x = self._expr.eval()
         out = np.zeros_like(x)
         self._op.apply(x, out)

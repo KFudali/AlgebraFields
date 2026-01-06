@@ -1,7 +1,7 @@
 from typing import Callable
 import numpy as np
 
-from algebra.exceptions import ShapeMismatchException
+from tools.algebra.exceptions import ShapeMismatchException
 from .expression import Expression
 
 

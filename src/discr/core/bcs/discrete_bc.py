@@ -1,8 +1,8 @@
 from abc import abstractmethod, ABC
 from typing import Generic
-from algebra.system import LES
+from tools.algebra.system import LES
 
-from model.domain import BoundaryType
+from discr.core.domain import BoundaryType
 
 
 class DiscreteBC(ABC, Generic[BoundaryType]):

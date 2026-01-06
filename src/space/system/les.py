@@ -4,7 +4,7 @@ from tools.algebra.system import LES
 from tools.algebra.operator import Operator
 from discr.core.bcs import DiscreteBC
 
-class LES(EqSystem):
+class LESExpr(EqSystem):
     def __init__(self, Ax: Operator, rhs: Expression):
         super().__init__()
         self._Ax = Ax
