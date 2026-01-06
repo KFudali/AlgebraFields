@@ -23,7 +23,7 @@ class FDLaplaceOperator(Operator):
             )
         ndim = input.ndim
         center = (slice(1, -1),) * ndim
-        out = np.zeros_like(out)
+        out[:] = 0 
         for axis in range(ndim):
             h = self._grid.ax_spacing(axis)
             plus = list(center)
