@@ -38,7 +38,7 @@ class Field(AbstractField):
     def value(self) -> FieldValue:
         return FieldValue(self, past_offset=0)
 
-    def update_value(self, expression: Expression) -> FieldUpdate:
+    def update(self, expression: Expression) -> FieldUpdate:
         return FieldUpdate(self, expression)
     
     def apply_bc(self, bc: DiscreteBC):

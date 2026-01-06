@@ -10,7 +10,7 @@ class FDLaplaceOperator(Operator):
         super().__init__(grid.shape, grid.shape)
         self._grid = grid
 
-    def apply(self, input: np.ndarray, out: np.ndarray):
+    def _apply(self, input: np.ndarray, out: np.ndarray):
         if input.shape != self.input_shape:
             raise ShapeMismatchException(
                 f"Cannot apply to an array. Input array shape: {input.shape}, ",

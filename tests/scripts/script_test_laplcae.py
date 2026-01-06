@@ -23,9 +23,10 @@ F.apply_bc(bc_top)
 F.apply_bc(bc_bot)
 
 rhs = eq_space.field()
-
 # ## lambda d^2/dxdx F = f ##
+
 les = space.system.LESExpr(
-    F.operator.laplace().operator, rhs.value()
+    F.operator.laplace(), rhs.value()
 )
-F.update_value(les.solve()).eval()
+[les.add_bc(bc) for bc in F.bcs]
+F.update(les.solve()).eval()

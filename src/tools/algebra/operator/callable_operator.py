@@ -14,5 +14,5 @@ class CallableOperator(Operator):
         super().__init__(input_shape, output_shape)
         self._apply_callable = apply
 
-    def apply(self, field: np.ndarray, out: np.ndarray):
+    def _apply(self, field: np.ndarray, out: np.ndarray):
         self._apply_callable(field, out)
