@@ -1,1 +1,0 @@
-class ShapeMismatchException(Exception): pass

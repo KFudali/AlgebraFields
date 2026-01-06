@@ -1,4 +1,4 @@
-from model.discrete import Discretization, DiscreteBCs, DiscreteOperators
+from discr.core import Discretization, DiscreteBCs, DiscreteOperators
 
 class Space():
     def __init__(self, discretization: Discretization):

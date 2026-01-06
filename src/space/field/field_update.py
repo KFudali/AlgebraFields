@@ -1,5 +1,5 @@
 from space.core import AbstractField
-from algebra import Expression
+from tools.algebra import Expression
 
 class FieldUpdate():
     def __init__(

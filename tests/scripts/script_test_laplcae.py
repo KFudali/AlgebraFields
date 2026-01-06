@@ -1,15 +1,14 @@
-import model.geometry.grid as grid
-import model.discrete as discrete
+from tools.geometry import grid
+import discr
 import space
-import algebra
 
 fd_grid = grid.StructuredGridND(shape=(4, 4), spacing=(0.01, 0.01))
-fd_domain = discrete.fd.FDDomain(fd_grid)
+fd_domain = discr.fd.FDDomain(fd_grid)
 
 top, bot = fd_domain.grid_boundaries(ax = 0)
 left, right = fd_domain.grid_boundaries(ax = 1)
 
-fd_disc = discrete.fd.FDDiscretization(fd_domain)
+fd_disc = discr.fd.FDDiscretization(fd_domain)
 eq_space = space.EquationSpace(fd_disc)
 
 bc_right = eq_space.bcs.dirichlet(right, value = 0)
@@ -25,16 +24,8 @@ F.apply_bc(bc_bot)
 
 rhs = eq_space.field()
 
-laplace = eq_space.operators.laplace()
 # ## lambda d^2/dxdx F = f ##
-les = algebra.system.LES(laplace, rh
-solve_les = space.expr.SolveLES(
-
-
-
-solve_les = space..LES(
-    eq_space.operators.laplace(), rhs.current_value()
+les = space.system.LES(
+    F.operator.laplace(), rhs.value()
 )
-[solve_les.apply_bc(bc) for bc in F.bcs]
-F.update_current(solve_les.solve()).eval()
-print('success!')
+F.update_value(les.solve()).eval()

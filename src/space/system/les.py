@@ -1,16 +1,17 @@
 from .system import EqSystem
-from algebra import Operator, Expression
-from algebra.expression import CallableExpression
-from algebra.system import LES, BoundaryCondition
+from tools.algebra.expr import Expression, CallableExpression
+from tools.algebra.system import LES
+from tools.algebra.operator import Operator
+from discr.core.bcs import DiscreteBC
 
-class LESExpression(EqSystem):
+class LES(EqSystem):
     def __init__(self, Ax: Operator, rhs: Expression):
         super().__init__()
-        self._Ax = Operator
-        self._rhs = Expression
-        self._bcs = list[BoundaryCondition]()
+        self._Ax = Ax
+        self._rhs = rhs
+        self._bcs = list[DiscreteBC]()
 
-    def add_bc(self, bc: BoundaryCondition):
+    def add_bc(self, bc: DiscreteBC):
         if bc in self._bcs: return
         self._bcs.append(bc)
 
@@ -24,5 +25,5 @@ class LESExpression(EqSystem):
     def solve(self) -> Expression:
         system = self._assemble()
         return CallableExpression(
-            self._rhs.output_shape, system.solve
+            self._rhs.output_shape, system.solve()
         )

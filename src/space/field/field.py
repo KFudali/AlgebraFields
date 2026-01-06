@@ -1,21 +1,22 @@
 import numpy as np
 
-from model.domain import Boundary
-from model.discrete.core.bcs import DiscreteBC
+from discr.core.domain import Boundary
+from discr.core.bcs import DiscreteBC
 
+from tools.algebra import Expression
 from space.core import AbstractField, Space
-from algebra.expression import Expression
 
 from .field_update import FieldUpdate
 from .field_value import FieldValue
 from .value_buffer import ValueBuffer
-
+from .operators import FieldOperators
 
 class Field(AbstractField):
     def __init__(self, space: Space, components: int):
         super().__init__(space, components)
         self._value = ValueBuffer(self.shape)
         self._bcs = dict[Boundary, DiscreteBC]()
+        self._ops = FieldOperators(field=self)
 
     def _get_current(self) -> np.ndarray:
         return self._value.get() 
@@ -34,10 +35,10 @@ class Field(AbstractField):
             self._value.set_saved_steps(past_offset)
         return FieldValue(self, past_offset)
 
-    def current_value(self) -> FieldValue:
+    def value(self) -> FieldValue:
         return FieldValue(self, past_offset=0)
 
-    def update_current(self, expression: Expression) -> FieldUpdate:
+    def update_value(self, expression: Expression) -> FieldUpdate:
         return FieldUpdate(self, expression)
     
     def apply_bc(self, bc: DiscreteBC):
@@ -46,3 +47,7 @@ class Field(AbstractField):
     @property
     def bcs(self) -> list[DiscreteBC]:
         return self._bcs.values()
+    
+    @property
+    def operator(self) -> FieldOperators:
+        return self._ops

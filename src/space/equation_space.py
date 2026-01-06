@@ -1,6 +1,6 @@
 from .core import Space
 from .field import Field
-from model.discrete import Discretization, DiscreteBCs, DiscreteOperators
+from discr import Discretization, DiscreteOperators, bcs
 
 
 
@@ -16,5 +16,5 @@ class EquationSpace(Space):
         return self._discretization.operators
 
     @property
-    def bcs(self) -> DiscreteBCs:
+    def bcs(self) -> bcs.DiscreteBCs:
         return self._discretization.bcs
