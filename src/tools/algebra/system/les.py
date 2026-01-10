@@ -1,7 +1,7 @@
 import numpy as np
 from ..operator import Operator
 from ..exceptions import ShapeMismatchException, SolverMaxIterReached
-from scipy.sparse.linalg import cg, LinearOperator
+from scipy.sparse.linalg import cg, gmres, LinearOperator
 
 
 class LES:
@@ -29,7 +29,7 @@ class LES:
         return self._rhs
 
     def solve(
-        self, method: str = "cg", maxiter: int = 100, tol: float = 1e-8
+        self, method: str = "cg", maxiter: int = 1000, tol: float = 1e-8
     ) -> np.ndarray:
         Ax = self._Ax
         rhs = self._rhs
@@ -53,8 +53,12 @@ class LES:
         if method not in solver_map:
             raise ValueError(f"Unknown solver: {method}")
         solver = solver_map[method]
-        x, info = solver(linop, rhs, maxiter=maxiter, rtol = tol)
 
+        iter = [0]
+        def iter_callback(xk):
+            iter[0] += 1
+        x, info = solver(linop, rhs, maxiter=maxiter, rtol = tol, callback=iter_callback)
         if info != 0:
             raise SolverMaxIterReached(f"{method} did not converge, info={info}")
+        print(f"CG converged in {iter[0]} iterations.")
         return x
