@@ -1,7 +1,9 @@
 import numpy as np
 from scipy.sparse.linalg import cg, LinearOperator
+import matplotlib.pyplot as plt
 
-N = 4
+
+N = 100
 N2 = N*N
 shape = (N, N)
 dx = 0.1
@@ -12,20 +14,41 @@ bot_ids = np.arange(N*(N-1), N*N)
 left_ids = np.arange(0, N*N, N)
 right_ids = np.arange(N-1, N*N, N)
 boundary_ids = np.unique(np.concatenate([top_ids, bot_ids, left_ids, right_ids]))
+all_ids = np.arange(N2)
+interior_ids = np.setdiff1d(all_ids, boundary_ids)
 
 A = np.eye(N2, N2) * (-2 / dx**2 - 2 / dy**2)
 A += (np.eye(N2, N2, -1) + np.eye(N2, N2, 1)) / dx**2
 A += (np.eye(N2, N2, -(N)) + np.eye(N2, N2, (N))) / dy**2
 A[boundary_ids, :] = 0
 A[boundary_ids, boundary_ids] = 1
+
 rhs = np.zeros(shape = np.prod(shape))
 rhs[top_ids] = 10
-direct_x = np.linalg.solve(A, rhs)
+
+mod_rhs = rhs - A @ rhs
+Ai = A[np.ix_(interior_ids, interior_ids)]
+Ab = A[np.ix_(interior_ids, boundary_ids)]
+rhsi = mod_rhs[interior_ids]
+
 def matvec(x: np.ndarray) -> np.ndarray:
     out = np.zeros_like(x)
-    out = A @ x
+    out = Ai @ x
     return out
-linop = LinearOperator(shape=(A.shape), matvec=matvec, dtype=float)
-x, info = cg(linop, rhs, maxiter=100, rtol = 1e-8)
-print(direct_x)
-print(x)
+linop = LinearOperator(shape=(Ai.shape), matvec=matvec, dtype=float)
+x, info = cg(linop, rhsi, maxiter=100, rtol = 1e-8)
+u = rhs
+u[interior_ids] = x
+
+x = np.linspace(0, (N-1)*dx, N)
+y = np.linspace(0, (N-1)*dy, N)
+X, Y = np.meshgrid(x, y)
+U = u.reshape(N,N)
+plt.figure(figsize=(6, 5))
+cont = plt.contourf(X, Y, U, levels=50)
+plt.colorbar(cont, label="u")
+plt.xlabel("x")
+plt.ylabel("y")
+plt.title("Laplace equation (FD, Dirichlet BC)")
+plt.axis("equal")
+plt.show()
