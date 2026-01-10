@@ -52,9 +52,8 @@ class LES:
 
         if method not in solver_map:
             raise ValueError(f"Unknown solver: {method}")
-
         solver = solver_map[method]
-        x, info = solver(linop, rhs, maxiter=maxiter, tol=tol)
+        x, info = solver(linop, rhs, maxiter=maxiter, rtol = tol)
 
         if info != 0:
             raise SolverMaxIterReached(f"{method} did not converge, info={info}")

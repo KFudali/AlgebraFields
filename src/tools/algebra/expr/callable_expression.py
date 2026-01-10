@@ -20,3 +20,4 @@ class CallableExpression(Expression):
             raise ShapeMismatchException(
                 f"Callable shape: {value.shape}. Expr shape: {self.output_shape}."
             )
+        return value

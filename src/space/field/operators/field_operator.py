@@ -1,35 +1,35 @@
 from typing import TYPE_CHECKING
 import numpy as np
 
-from tools.algebra import Expression, Operator, exceptions
+from space.core import FieldExpression, FieldOperator
+from tools.algebra.exceptions import ShapeMismatchException
 if TYPE_CHECKING:
     from ..field import Field
 
-class FieldOperator(Expression, Operator):
-    def __init__(self, field: "Field", op: Operator):
-        if field.space.shape != op.input_shape:
-            raise exceptions.ShapeMismatchException(
+class FieldOperatorExpr(FieldExpression, FieldOperator):
+    def __init__(self, field: "Field", op: FieldOperator):
+        if field.shape != op.input_shape:
+            raise ShapeMismatchException(
                 "Cannot create FieldOperator. Field size differs from operator size. "
                 f"Field shape: {field.shape}, ",
                 f"Operator input shape: {op.input_shape}"
             )
-        if field.space.shape != op.output_shape:
-            raise exceptions.ShapeMismatchException(
+        if field.shape != op.output_shape:
+            raise ShapeMismatchException(
                 "Cannot create FieldOperator. Field size differs from operator size. "
                 f"Field shape: {field.shape}, ",
                 f"Operator output shape: {op.input_shape}"
             )
         self._op = op
         self._field = field
-        Expression.__init__(self, field.shape)
-        Operator.__init__(self, field.shape, field.shape)
+        FieldExpression.__init__(self, field.space, field.components)
+        FieldOperator.__init__(self, field.space, field.components)
 
     def _apply(self, field: np.ndarray, out: np.ndarray):
-        for component in range(self._field.components):
-            self._op.apply(field, out[component:])
-
+        return self._op._apply(field, out)
+    
     def eval(self) -> np.ndarray:
-        out = np.zeros(self._field.shape)
-        for component in range(self._field.components):
-            self._op.apply(self._field.value().eval(), out[component:])
+        field = self._field.value().eval()
+        out = np.zeros_like(field)
+        self._apply(field, out)
         return out

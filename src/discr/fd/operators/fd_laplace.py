@@ -14,12 +14,12 @@ class FDLaplaceOperator(Operator):
         if input.shape != self.input_shape:
             raise ShapeMismatchException(
                 f"Cannot apply to an array. Input array shape: {input.shape}, ",
-                "Operator input shape: {self.input_shape}"
+                f"Operator input shape: {self.input_shape}"
             )
         if out.shape != self.output_shape:
             raise ShapeMismatchException(
                 f"Cannot apply to an array. Output array shape: {out.shape}, ",
-                "Operator input shape: {self.output_shape}"
+                f"Operator input shape: {self.output_shape}"
             )
         ndim = input.ndim
         center = (slice(1, -1),) * ndim

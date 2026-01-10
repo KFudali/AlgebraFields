@@ -2,7 +2,7 @@ from tools.geometry import grid
 import discr
 import space
 
-fd_grid = grid.StructuredGridND(shape=(4, 4), spacing=(0.01, 0.01))
+fd_grid = grid.StructuredGridND(shape=(10, 10), spacing=(0.1, 0.1))
 fd_domain = discr.fd.FDDomain(fd_grid)
 
 top, bot = fd_domain.grid_boundaries(ax = 0)
@@ -13,8 +13,8 @@ eq_space = space.EquationSpace(fd_disc)
 
 bc_right = eq_space.bcs.dirichlet(right, value = 0)
 bc_left = eq_space.bcs.dirichlet(left, value = 10)
-bc_top = eq_space.bcs.neumann(top, value = 0)
-bc_bot = eq_space.bcs.neumann(bot, value = 0)
+bc_top = eq_space.bcs.dirichlet(top, value = 0)
+bc_bot = eq_space.bcs.dirichlet(bot, value = 0)
 
 F = eq_space.field()
 F.apply_bc(bc_left)
@@ -29,4 +29,8 @@ les = space.system.LESExpr(
     F.operator.laplace(), rhs.value()
 )
 [les.add_bc(bc) for bc in F.bcs]
-F.update(les.solve()).eval()
+les_solve = les.solve()
+F.update(les_solve).eval()
+arr = F.value().eval()
+print(arr)
+# print('success!')

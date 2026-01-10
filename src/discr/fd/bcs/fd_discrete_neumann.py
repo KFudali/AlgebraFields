@@ -16,22 +16,28 @@ class FDNeumannBC(DiscreteNeumannBC):
         return self._boundary
 
     def apply_to_system(self, system: LES):
+        old_Ax = system.Ax
+
         axis = self.boundary.axis
         inward_dir = self.boundary.inward_dir
         h = self.boundary.grid.ax_spacing(axis)
         shape = self.boundary.grid.shape
+        ids = self.boundary.ids
+        value = self._value
 
         def modified_apply(field: np.ndarray, out: np.ndarray):
-            system.Ax.apply(field, out)
+            old_Ax.apply(field, out)
 
-            for i in self.boundary.ids:
+            for i in ids:
                 idx = list(np.unravel_index(i, shape))
                 idx_in = idx.copy()
                 idx_in[axis] += inward_dir
                 j = np.ravel_multi_index(idx_in, shape)
 
-                out[i] = (field[j] - field[i]) / h - self._value
-            Ax = CallableOperator(
-                system.Ax.input_shape, system.Ax.output_shape, modified_apply
-            )
-            system._Ax = Ax
+                out[i] = (field[j] - field[i]) / h - value
+
+        system._Ax = CallableOperator(
+            old_Ax.input_shape,
+            old_Ax.output_shape,
+            modified_apply
+        )

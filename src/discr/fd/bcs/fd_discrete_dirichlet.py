@@ -16,11 +16,18 @@ class FDDirichletBC(DiscreteDirichletBC):
         return self._boundary
 
     def apply_to_system(self, system: LES):
-        def modified_apply(field: np.ndarray, out: np.ndarray):
-            system.Ax.apply(field, out)
-            out[self.boundary.ids] = self._value
-        Ax = CallableOperator(
-            system.Ax.input_shape, system.Ax.output_shape, modified_apply
-        )
-        system._Ax = Ax
-        system._rhs[self.boundary.ids] = self._value
+            old_Ax = system.Ax
+            ids = self.boundary.ids
+            value = self._value
+
+            def modified_apply(field: np.ndarray, out: np.ndarray):
+                old_Ax.apply(field, out)
+                out[ids] = value
+
+            system._Ax = CallableOperator(
+                old_Ax.input_shape,
+                old_Ax.output_shape,
+                modified_apply
+            )
+
+            system._rhs[ids] = value

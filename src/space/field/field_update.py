@@ -7,7 +7,6 @@ class FieldUpdate():
         field: AbstractField, 
         expr: Expression,
     ):
-        field.assert_array_shape(expr)
         self._field = field
         self._expr = expr
 

@@ -1,14 +1,14 @@
 import numpy as np
-from space.core import AbstractField
-from tools.algebra import Expression
+from space.core import AbstractField, FieldExpression
 
-class FieldValue(Expression):
+
+class FieldValue(FieldExpression):
     def __init__(
         self, 
         field: AbstractField, 
         past_offset: int = 0
     ):
-        super().__init__(field.shape)
+        super().__init__(field.space, field.components)
         self._field = field
         self._past_offset = past_offset
 

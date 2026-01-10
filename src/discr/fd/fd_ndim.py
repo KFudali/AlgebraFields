@@ -1,3 +1,5 @@
+import numpy as np
+
 from discr.core import Discretization
 from .domain import FDDomain
 from .fd_operators import FDOperators
@@ -25,3 +27,10 @@ class FDDiscretization(Discretization[FDDomain]):
     @property
     def bcs(self) -> FDDiscreteBCs:
         return self._bcs
+
+    def flatten(self, field_array: np.ndarray) -> np.ndarray:
+        return field_array.flatten()
+
+    def reshape(self, flat_array: np.ndarray) -> np.ndarray:
+        components = int(flat_array.shape[0] / np.prod(self.shape))
+        return flat_array.reshape((components, *self.shape))

@@ -1,4 +1,5 @@
 from .space import Space
+import numpy as np
 
 class ShapeMismatch(Exception): pass
 
@@ -18,21 +19,9 @@ class FieldShaped():
     @property
     def shape(self) -> tuple[int, ...]:
         return (self.components, *self.space.discretization.shape)
-
-    @property
-    def shape(self) -> tuple[int, ...]:
-        return (self.components, *self.space.discretization.shape)
-
-    @staticmethod
-    def assert_compatible(a: "FieldShaped", b: "FieldShaped", error_msg: str = ""):
-        if a.space != b.space:
-            raise ShapeMismatch(f"Space mismatch: {error_msg}")
-        if a.components != b.components:
-            raise ShapeMismatch(f"Component mismatch: {error_msg}")
-
-    def assert_array_shape(self, other: tuple[int, ...], error_msg: str = ""):
-        if self.array_shape != other:
-            raise ShapeMismatch(
-                error_msg + \
-                f"\nSelf shape: {self.shape}\n Other shape: {other}."
-            )
+    
+    def flatten(self, array: np.ndarray) -> np.ndarray:
+        return self.space.discretization.flatten(array)
+    
+    def reshape(self, array: np.ndarray) -> np.ndarray:
+        return self.space.discretization.reshape(array)
