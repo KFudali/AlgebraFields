@@ -2,7 +2,8 @@ from tools.geometry import grid
 import discr
 import space
 
-fd_grid = grid.StructuredGridND(shape=(3, 3), spacing=(0.1, 0.1))
+n = 4
+fd_grid = grid.StructuredGridND(shape=(n, n), spacing=(0.1, 0.1))
 fd_domain = discr.fd.FDDomain(fd_grid)
 
 top, bot = fd_domain.grid_boundaries(ax = 0)
@@ -15,7 +16,8 @@ bc_right = eq_space.bcs.dirichlet(right, value = 0)
 bc_left = eq_space.bcs.dirichlet(left, value = 0)
 bc_bot = eq_space.bcs.dirichlet(bot, value = 0)
 bc_top = eq_space.bcs.dirichlet(top, value = 10)
-
+bc_right._boundary._ids = bc_right._boundary._ids[1:-1]
+bc_left._boundary._ids = bc_left._boundary._ids[1:-1]
 F = eq_space.field()
 F.apply_bc(bc_left)
 F.apply_bc(bc_right)
