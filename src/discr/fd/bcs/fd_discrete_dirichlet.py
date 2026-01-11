@@ -19,10 +19,11 @@ class FDDirichletBC(DiscreteDirichletBC):
         old_Ax = system.Ax
         ids = self.boundary.ids
         value = self._value
+        
 
         def modified_apply(x: np.ndarray, out: np.ndarray):
             old_Ax.apply(x, out)
-            out[ids] = x[ids]    # identity rows
+            out[ids] = x[ids]
 
         system._Ax = CallableOperator(
             old_Ax.input_shape,
@@ -30,4 +31,7 @@ class FDDirichletBC(DiscreteDirichletBC):
             modified_apply
         )
 
+        mod_rhs = np.zeros_like(system.rhs)
         system._rhs[ids] = value
+        system.Ax.apply(system.rhs, mod_rhs)
+        system._rhs[:] -= mod_rhs[:] 
