@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 import numpy as np
 
-from algebra.exceptions import ShapeMismatchException
+from tools.algebra.exceptions import ShapeMismatchException
 
 class Transform(ABC):
     def __init__(self, input_shape: tuple[int, ...], output_shape: tuple[int, ...]):

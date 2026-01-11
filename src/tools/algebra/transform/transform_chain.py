@@ -1,7 +1,7 @@
 import numpy as np
 
 from .transform import Transform
-from algebra.exceptions import ShapeMismatchException
+from tools.algebra.exceptions import ShapeMismatchException
 
 class TransformChain(Transform):
     def __init__(self, first_tr: Transform):

@@ -1,8 +1,7 @@
 import numpy as np
 
 from .operator import Operator
-from algebra.exceptions import ShapeMismatchException
-
+from tools.algebra.exceptions import ShapeMismatchException
 
 class OperatorChain(Operator):
     def __init__(self, base_op: Operator):
