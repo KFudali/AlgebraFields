@@ -2,8 +2,7 @@ import numpy as np
 from scipy.sparse.linalg import cg, LinearOperator
 import matplotlib.pyplot as plt
 
-
-N = 100
+N = 4
 N2 = N*N
 shape = (N, N)
 dx = 0.1
@@ -27,19 +26,18 @@ rhs = np.zeros(shape = np.prod(shape))
 rhs[top_ids] = 10
 
 mod_rhs = rhs - A @ rhs
-Ai = A[np.ix_(interior_ids, interior_ids)]
-Ab = A[np.ix_(interior_ids, boundary_ids)]
-rhsi = mod_rhs[interior_ids]
+# Ai = A[np.ix_(interior_ids, interior_ids)]
+# Ab = A[np.ix_(interior_ids, boundary_ids)]
+# rhsi = mod_rhs[interior_ids]
 
 def matvec(x: np.ndarray) -> np.ndarray:
     out = np.zeros_like(x)
-    out = Ai @ x
+    out = A @ x
     return out
-linop = LinearOperator(shape=(Ai.shape), matvec=matvec, dtype=float)
-x, info = cg(linop, rhsi, maxiter=100, rtol = 1e-8)
-u = rhs
-u[interior_ids] = x
-
+linop = LinearOperator(shape=(A.shape), matvec=matvec, dtype=float)
+x, info = cg(linop, mod_rhs, maxiter=100, rtol = 1e-8)
+u = x
+u[top_ids] = 10
 x = np.linspace(0, (N-1)*dx, N)
 y = np.linspace(0, (N-1)*dy, N)
 X, Y = np.meshgrid(x, y)
