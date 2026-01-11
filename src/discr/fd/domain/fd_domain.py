@@ -60,6 +60,8 @@ class FDDomain(Domain):
         inward_dir: int,
     ) -> FDBoundary:
         boundary_id = BoundaryId(self._next_boundary_id)
+        for boundary in self._boundaries.values():
+            boundary._ids = boundary._ids[~np.isin(boundary._ids, ids)]
         boundary = FDBoundary(self._grid, boundary_id, ids, ax, inward_dir)
         self._boundaries[boundary_id] = boundary
         self._next_boundary_id = self._next_boundary_id + 1
