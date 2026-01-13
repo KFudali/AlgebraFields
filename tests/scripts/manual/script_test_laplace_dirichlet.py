@@ -26,9 +26,6 @@ rhs = np.zeros(shape = np.prod(shape))
 rhs[top_ids] = 10
 
 mod_rhs = rhs - A @ rhs
-# Ai = A[np.ix_(interior_ids, interior_ids)]
-# Ab = A[np.ix_(interior_ids, boundary_ids)]
-# rhsi = mod_rhs[interior_ids]
 
 def matvec(x: np.ndarray) -> np.ndarray:
     out = np.zeros_like(x)

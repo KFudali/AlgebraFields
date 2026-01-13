@@ -28,7 +28,7 @@ class StructuredGridND:
     def ax_spacing(self, axis: int) -> float:
         return self._spacing[axis]
 
-    def flat_id(self, *idx) -> int:
+    def flat_id(self, idx) -> int:
         """Convert ND index → flat index"""
         return np.ravel_multi_index(idx, self.shape)
 

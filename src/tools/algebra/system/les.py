@@ -46,7 +46,7 @@ class LES:
             "cg": cg,
             # 'bicg': bicg,
             # 'bicgstab': bicgstab,
-            # 'gmres': gmres,
+            'gmres': gmres,
             # 'minres': minres
         }
 
