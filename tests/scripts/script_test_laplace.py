@@ -1,9 +1,11 @@
-from tools.geometry import grid
+import numpy as np
 import discr
 import space
+import tools.algebra
+import tools.geometry
 
 n = 10
-fd_grid = grid.StructuredGridND(shape=(n, n), spacing=(0.1, 0.1))
+fd_grid = tools.geometry.grid.StructuredGridND(shape=(n, n), spacing=(0.1, 0.1))
 fd_domain = discr.fd.FDDomain(fd_grid)
 
 top, bot = fd_domain.grid_boundaries(ax = 0)
@@ -23,6 +25,11 @@ F.apply_bc(bc_bot)
 F.apply_bc(bc_top)
 
 rhs = eq_space.field()
+rhs.update(
+    tools.algebra.expr.CallableExpression(
+        rhs.shape, lambda: np.ones(shape = rhs.shape)
+    )
+).eval()
 # ## lambda d^2/dxdx F = f ##
 
 les = space.system.LESExpr(
