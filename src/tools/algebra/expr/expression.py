@@ -1,14 +1,50 @@
-from abc import ABC, abstractmethod
-import numpy as np
+from .core import CoreExpression
+from .core import binary_ops, unary_ops
 
-
-class Expression(ABC):
+class Expression(CoreExpression):
     def __init__(self, output_shape: tuple[int, ...]):
-        self._output_shape = output_shape
+        super().__init__(output_shape)
 
-    @property
-    def output_shape(self) -> tuple[int, ...]:
-        return self._output_shape
+    def __add__(self, other: CoreExpression | float):
+        if isinstance(other, CoreExpression):
+            return binary_ops.AddExpr(self, other)
+        if isinstance(other, float):
+            return unary_ops.ScalarShiftExpr(self, other)
+        return NotImplemented
 
-    @abstractmethod
-    def eval(self) -> np.ndarray: pass
+    def __radd__(self, other: CoreExpression | float):
+        if isinstance(other, float):
+            return unary_ops.ScalarShiftExpr(self, other)
+        return NotImplemented
+
+    def __sub__(self, other: CoreExpression | float):
+        if isinstance(other, CoreExpression):
+            return binary_ops.SubtractExpr(self, other)
+        if isinstance(other, float):
+            return unary_ops.ScalarShiftExpr(self, -other)
+        return NotImplemented
+
+    def __rsub__(self, other: CoreExpression | float):
+        if isinstance(other, float):
+            return unary_ops.ScalarShiftExpr(-self, other)
+        return NotImplemented
+
+    def __mul__(self, other: CoreExpression | float):
+        if isinstance(other, CoreExpression):
+            return binary_ops.ElementWiseMulExpr(self, other)
+        if isinstance(other, float):
+            return unary_ops.ScaleExpr(self, other)
+        return NotImplemented
+
+    def __rmul__(self, other: CoreExpression | float):
+        if isinstance(other, float):
+            return unary_ops.ScaleExpr(self, other)
+        return NotImplemented
+
+    def __matmul__(self, other: CoreExpression | float):
+        if isinstance(other, CoreExpression):
+            return binary_ops.MatMulExpr(self, other)
+        return NotImplemented
+
+    def __neg__(self):
+        return unary_ops.NegExpr(self)

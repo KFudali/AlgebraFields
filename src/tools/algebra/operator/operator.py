@@ -1,34 +1,49 @@
-from abc import ABC, abstractmethod
-import numpy as np
-from ..exceptions import ShapeMismatchException
+from .core import CoreOperator, binary_ops, unary_ops
 
-class Operator(ABC):
+class Operator(CoreOperator):
     def __init__(self, input_shape: tuple[int, ...], output_shape: tuple[int, ...]):
-        self._input_shape = input_shape
-        self._output_shape = output_shape
+        super().__init__(input_shape, output_shape)
 
-    @property
-    def input_shape(self) -> tuple[int, ...]:
-        return self._input_shape
+    def __add__(self, other: CoreOperator | float):
+        if isinstance(other, CoreOperator):
+            return binary_ops.AddOperator(self, other)
+        if isinstance(other, float):
+            return unary_ops.ScalarShiftOperator(self, other)
+        return NotImplemented
 
-    @property
-    def output_shape(self) -> tuple[int, ...]:
-        return self._output_shape
+    def __radd__(self, other: CoreOperator | float):
+        if isinstance(other, float):
+            return unary_ops.ScalarShiftOperator(self, other)
+        return NotImplemented
 
-    def apply(self, field: np.ndarray, out: np.ndarray):
-        if field.shape != self.input_shape:
-            raise ShapeMismatchException(
-                "Cannot apply operator. Input size differs from operator size. "
-                f"Output shape: {field.shape}, ",
-                f"Operator input shape: {self.input_shape}"
-            )
-        if out.shape != self.output_shape:
-            raise ShapeMismatchException(
-                "Cannot apply operator. Output size differs from operator size. "
-                f"Output shape: {out.shape}, ",
-                f"Operator output shape: {self.output_shape}"
-            )
-        self._apply(field, out)
+    def __sub__(self, other: CoreOperator | float):
+        if isinstance(other, CoreOperator):
+            return binary_ops.SubtractOperator(self, other)
+        if isinstance(other, float):
+            return unary_ops.ScalarShiftOperator(self, -other)
+        return NotImplemented
 
-    @abstractmethod
-    def _apply(self, field: np.ndarray, out: np.ndarray): pass
+    def __rsub__(self, other: CoreOperator | float):
+        if isinstance(other, float):
+            return unary_ops.ScalarShiftOperator(-self, other)
+        return NotImplemented
+
+    def __mul__(self, other: CoreOperator | float):
+        if isinstance(other, CoreOperator):
+            return binary_ops.ElementWiseMulOperator(self, other)
+        if isinstance(other, float):
+            return unary_ops.ScaleOperator(self, other)
+        return NotImplemented
+
+    def __rmul__(self, other: CoreOperator | float):
+        if isinstance(other, float):
+            return unary_ops.ScaleOperator(self, other)
+        return NotImplemented
+
+    def __matmul__(self, other: CoreOperator | float):
+        if isinstance(other, CoreOperator):
+            return binary_ops.MatMulOperator(self, other)
+        return NotImplemented
+
+    def __neg__(self):
+        return unary_ops.NegOperator(self)

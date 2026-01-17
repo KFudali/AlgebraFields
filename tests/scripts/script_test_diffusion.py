@@ -1,7 +1,5 @@
-import numpy as np
 import discr
 import space
-import tools.algebra
 import tools.geometry
 
 n = 10
@@ -26,9 +24,6 @@ F.apply_bc(bc_top)
 
 dFdt = space.time.explicit.EulerTimeDerivative(F)
 # ## lambda d^2/dxdx F(t) = (F(t) - F(t-1)) / dt
-
-# dFdt.op().Ax() -> FieldOperator
-# dFdt.op().b() -> FieldValue
 
 lam = 0.01
 solve_les = space.system.LESExpr(
