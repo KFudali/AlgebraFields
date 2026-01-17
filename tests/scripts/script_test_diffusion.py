@@ -1,77 +1,39 @@
-import spacer
-import model.geometry.grid as grid
-import model.discrete as discrete
-import spacer.expr as expr
+import numpy as np
+import discr
+import space
+import tools.algebra
+import tools.geometry
 
-fd_grid = grid.StructuredGridND(shape=(4, 4), spacing=(0.01, 0.01))
-fd_domain = discrete.fd.FDDomain(fd_grid)
+n = 10
+fd_grid = tools.geometry.grid.StructuredGridND(shape=(n, n), spacing=(0.1, 0.1))
+fd_domain = discr.fd.FDDomain(fd_grid)
 
 top, bot = fd_domain.grid_boundaries(ax = 0)
 left, right = fd_domain.grid_boundaries(ax = 1)
 
-fd_disc = discrete.fd.FDDiscretization(fd_domain)
-eq_space = spacer.EquationSpace(fd_disc)
+fd_disc = discr.fd.FDDiscretization(fd_domain)
+eq_space = space.EquationSpace(fd_disc)
 
-bc_right = eq_space.bcs.dirichlet(right, value = 0)
-bc_left = eq_space.bcs.dirichlet(left, value = 10)
-bc_top = eq_space.bcs.neumann(top, value = 0)
-bc_bot = eq_space.bcs.neumann(bot, value = 0)
-
-time_series = ConstStepTimeSeries(0.0, 100.0, 0.01)
-
-F = eq_space.fields.transient.scalar(time_series)
-
+bc_right = eq_space.bcs.neumann(right, value = 0)
+bc_left = eq_space.bcs.neumann(left, value = 0)
+bc_bot = eq_space.bcs.dirichlet(bot, value = 0)
+bc_top = eq_space.bcs.dirichlet(top, value = 10)
+F = eq_space.field()
 F.apply_bc(bc_left)
 F.apply_bc(bc_right)
-F.apply_bc(bc_top)
 F.apply_bc(bc_bot)
+F.apply_bc(bc_top)
 
-# ## lambda d^2/dxdx F(t+1) = (F(t+1) - F(t)) / dt
-# ## F(t+1) - dt * lambda * d^2/dxdx F(t+1) = F(t)
-dFdte = eq_space.fields.time.derivatives.explicit.euler(field=F, order=1, time_series = time_series)
-dFdti = eq_space.fields.time.derivatives.implicit.euler(field=F, order=1, time_series = time_series)
+dFdt = space.time.explicit.EulerTimeDerivative(F)
+# ## lambda d^2/dxdx F(t) = (F(t) - F(t-1)) / dt
 
-ts = time_series.time_step(0)
+# dFdt.op().Ax() -> FieldOperator
+# dFdt.op().b() -> FieldValue
 
-F.initialize(0, ts = time_series.first)
-dFdti.initialize(0, ts = time_series.first)
-
-solve_les = expr.solve.LESSolve(
-    dFdti.at(ts).linop()  * lam * F.at(ts).operator.laplace(),
-    rhs.value()
-)
-[solve_les.apply_bc(bc) for bc in F.bcs]
-f_update = expr.field.FieldUpdate(field = F, value = solve_les.solve())
-progress_ts = time_series.progress_ts(ts)
-
-les_step = Step(solve_les)
-field_update_step = Step(f_update)
-progress_ts_step = Step(progress_ts)
-algorithm = Algorithm([les_step, field_update_step, progress_ts_step])
-
-integrator = TimeIntegrator(time_series)
-integrator.run(algorithm)
-
-# Centralized time design
-tw = eq_space.current_time_window()
-# dFdte = eq_space.fields.time.derivatives.explicit.euler(field=F, order=1)
-dFdti = eq_space.fields.time.derivatives.implicit.euler(field=F, order=1)
-F.initialize(0, ts = time_series.first)
-dFdti.initialize(0, ts = time_series.first)
-
-solve_les = expr.solve.LESSolve(
-    dFdti.at(tw).linop()  * lam * F.at(tw).operator.laplace(),
-    rhs.value()
-)
-[solve_les.apply_bc(bc) for bc in F.bcs]
-f_update = expr.field.FieldUpdate(field = F, value = solve_les.solve())
-
-les_step = Step(solve_les)
-field_update_step = Step(f_update)
-algorithm = Algorithm(
-    [les_step, field_update_step]
+lam = 0.01
+solve_les = space.system.LESExpr(
+    (lam * F.operator.laplace()) - dFdt.op().Ax(), -dFdt.op().b()
 )
 
-integrator = ConstTimeStepIntegrator(start = 0.0, end = 100.0, dt = 0.01)
-integrator.run(algorithm)
-
+for dt in range(0, 1, 0.01):
+    F.update(solve_les.solve()).eval()

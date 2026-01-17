@@ -26,10 +26,13 @@ class Field(AbstractField):
 
     def _get_past(self, past_offset: int = 1) -> np.ndarray:
         return self._value.get(past_offset)
-    
-    def _advance(self):
+
+    def advance(self, dt: float):
+        self._advance(dt)
+
+    def _advance(self, dt: float):
         self._value.advance()
-    
+
     def prev_value(self, past_offset: int = 1) -> FieldValue:
         if past_offset > self._value.saved_steps:
             self._value.set_saved_steps(past_offset)
@@ -40,7 +43,10 @@ class Field(AbstractField):
 
     def update(self, expression: Expression) -> FieldUpdate:
         return FieldUpdate(self, expression)
-    
+
+    def set_saved_steps(self, steps: int):
+        self._value.set_saved_steps(steps)
+
     def apply_bc(self, bc: DiscreteBC):
         self._bcs[bc.boundary] = bc
 
