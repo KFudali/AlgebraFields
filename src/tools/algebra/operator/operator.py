@@ -40,6 +40,13 @@ class Operator(CoreOperator):
             return unary_ops.ScaleOperator(self, other)
         return NotImplemented
 
+    def __truediv(self, other: CoreOperator | float):
+        if isinstance(other, CoreOperator):
+            return binary_ops.ElementWiseMulOperator(self, other)
+        if isinstance(other, float):
+            return unary_ops.ScaleOperator(self, 1.0 / other)
+        return NotImplemented
+
     def __matmul__(self, other: CoreOperator | float):
         if isinstance(other, CoreOperator):
             return binary_ops.MatMulOperator(self, other)

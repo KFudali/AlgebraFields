@@ -63,6 +63,16 @@ class ElementWiseMulOperator(ConstShapeOperatorBinaryOp):
         self._left.apply(field, out)
         out[:] *= right_out[:]
 
+class ElementWiseDivOperator(ConstShapeOperatorBinaryOp):
+    def __init__(self, left: CoreOperator, right: CoreOperator):
+        super().__init__(left, right, left.output_shape)
+
+    def _apply(self, field: np.ndarray, out: np.ndarray):
+        right_out = np.zeros_like(out)
+        self._right.apply(field, right_out)
+        self._left.apply(field, out)
+        out[:] /= right_out[:]
+
 
 def matmul_shape(a: tuple[int, ...], b: tuple[int, ...]) -> tuple[int, ...]:
     if len(a) == 0 or len(b) == 0:

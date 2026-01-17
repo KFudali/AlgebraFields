@@ -13,62 +13,47 @@ class ExprBinaryOp(CoreExpression):
         self.right = right
         super().__init__(output_shape)
 
-class AddExpr(ExprBinaryOp):
-    def __init__(
-        self, 
-        left: CoreExpression,
-        right: CoreExpression
-    ):
+class ShapeMatchedExprBinaryOp(ExprBinaryOp):
+    def __init__(self, left: CoreExpression, right: CoreExpression):
         if left.output_shape != right.output_shape:
             raise ShapeMismatchException(
                 (
-                    "Can only add expressions of equal shape.",
+                    "Can only compose operator from exprs of equal shape.",
                     f"left shape: {left.output_shape}, ",
                     f"right shape: {right.output_shape}"
                 )
             )
-        super().__init__(left, right, left.output_shape)
+        super().__init__(left, right, right.output_shape)
+        
+
+class AddExpr(ShapeMatchedExprBinaryOp):
+    def __init__(self, left: CoreExpression, right: CoreExpression):
+        super().__init__(left, right)
 
     def eval(self):
         return self.left.eval() + self.right.eval()
 
-class SubtractExpr(ExprBinaryOp):
-    def __init__(
-        self, 
-        left: CoreExpression,
-        right: CoreExpression
-    ):
-        if left.output_shape != right.output_shape:
-            raise ShapeMismatchException(
-                (
-                    "Can only subtract expressions of equal shape.",
-                    f"left shape: {left.output_shape}, ",
-                    f"right shape: {right.output_shape}"
-                )
-            )
-        super().__init__(left, right, left.output_shape)
+class SubtractExpr(ShapeMatchedExprBinaryOp):
+    def __init__(self, left: CoreExpression, right: CoreExpression):
+        super().__init__(left, right)
 
     def eval(self):
         return self.left.eval() - self.right.eval()
 
-class ElementWiseMulExpr(ExprBinaryOp):
-    def __init__(
-        self, 
-        left: CoreExpression,
-        right: CoreExpression
-    ):
-        if left.output_shape != right.output_shape:
-            raise ShapeMismatchException(
-                (
-                    "Can only subtract expressions of equal shape.",
-                    f"left shape: {left.output_shape}, ",
-                    f"right shape: {right.output_shape}"
-                )
-            )
-        super().__init__(left, right, left.output_shape)
+class ElementWiseMulExpr(ShapeMatchedExprBinaryOp):
+    def __init__(self, left: CoreExpression, right: CoreExpression):
+        super().__init__(left, right)
 
     def eval(self):
         return self.left.eval() * self.right.eval()
+
+class ElementWiseDivExpr(ShapeMatchedExprBinaryOp):
+    def __init__(self, left: CoreExpression, right: CoreExpression):
+        super().__init__(left, right)
+
+    def eval(self):
+        return self.left.eval() / self.right.eval()
+
 
 def matmul_shape(a: tuple[int, ...], b: tuple[int, ...]) -> tuple[int, ...]:
     if len(a) == 0 or len(b) == 0:

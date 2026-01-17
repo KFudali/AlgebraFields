@@ -36,6 +36,13 @@ class Expression(CoreExpression):
             return unary_ops.ScaleExpr(self, other)
         return NotImplemented
 
+    def __truediv__(self, other: CoreExpression | float):
+        if isinstance(other, CoreExpression):
+            return binary_ops.ElementWiseDivExpr(self, other)
+        if isinstance(other, float):
+            return unary_ops.ScaleExpr(self, 1.0 / other)
+        return NotImplemented
+
     def __rmul__(self, other: CoreExpression | float):
         if isinstance(other, float):
             return unary_ops.ScaleExpr(self, other)
@@ -45,6 +52,7 @@ class Expression(CoreExpression):
         if isinstance(other, CoreExpression):
             return binary_ops.MatMulExpr(self, other)
         return NotImplemented
+    
 
     def __neg__(self):
         return unary_ops.NegExpr(self)
