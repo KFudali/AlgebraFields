@@ -26,9 +26,11 @@ dFdt = space.time.explicit.EulerTimeDerivative(F)
 # ## lambda d^2/dxdx F(t) = (F(t) - F(t-1)) / dt
 
 lam = 0.01
+op =  (lam * F.operator.laplace()) - dFdt.op().Ax()
+rhs = -dFdt.op().b()
 solve_les = space.system.LESExpr(
     (lam * F.operator.laplace()) - dFdt.op().Ax(), -dFdt.op().b()
 )
 
-for dt in range(0, 1, 0.01):
+for dt in [0.0, 0.01, 0.02]:
     F.update(solve_les.solve()).eval()

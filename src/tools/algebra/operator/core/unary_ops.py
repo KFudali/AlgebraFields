@@ -1,13 +1,13 @@
 import numpy as np
-from .core_operator import CoreOperator
+from .operator import Operator
 
-class OperatorUnaryOp(CoreOperator):
-    def __init__(self, operand: CoreOperator, output_shape: tuple[int, ...]):
+class OperatorUnaryOp(Operator):
+    def __init__(self, operand: Operator, output_shape: tuple[int, ...]):
         self._operand = operand
         super().__init__(operand.input_shape, output_shape)
 
-class ScaleOperator(OperatorUnaryOp):
-    def __init__(self, operand: CoreOperator, scale: float):
+class OperatorScaleOp(OperatorUnaryOp):
+    def __init__(self, operand: Operator, scale: float):
         super().__init__(operand, operand.output_shape)
         self._scale = scale
 
@@ -15,8 +15,8 @@ class ScaleOperator(OperatorUnaryOp):
         self._operand.apply(field, out)
         out[:] *= self._scale
 
-class ScalarShiftOperator(OperatorUnaryOp):
-    def __init__(self, operand: CoreOperator, scalar: float):
+class OperatorScalarShiftOp(OperatorUnaryOp):
+    def __init__(self, operand: Operator, scalar: float):
         super().__init__(operand, operand.output_shape)
         self._scalar = scalar
 
@@ -24,8 +24,8 @@ class ScalarShiftOperator(OperatorUnaryOp):
         self._operand.apply(field, out)
         out[:] += self._scalar
     
-class NegOperator(OperatorUnaryOp):
-    def __init__(self, operand: CoreOperator):
+class OperatorNegOp(OperatorUnaryOp):
+    def __init__(self, operand: Operator):
         super().__init__(operand, operand.output_shape)
 
     def _apply(self, field: np.ndarray, out: np.ndarray) -> np.ndarray:

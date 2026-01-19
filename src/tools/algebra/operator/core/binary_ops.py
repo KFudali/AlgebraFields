@@ -1,17 +1,17 @@
 import numpy as np
 from tools.algebra.exceptions import ShapeMismatchException
-from .core_operator import CoreOperator
+from .operator import Operator
 
-class OperatorBinaryOp(CoreOperator):
+class OperatorBinaryOp(Operator):
     def __init__(
-        self, left: CoreOperator, right: CoreOperator, output_shape: tuple[int, ...]
+        self, left: Operator, right: Operator, output_shape: tuple[int, ...]
     ):
         self._left = left
         self._right = right
         super().__init__(left.input_shape, output_shape)
 
 class ConstShapeOperatorBinaryOp(OperatorBinaryOp):
-    def __init__(self, left: CoreOperator, right: CoreOperator):
+    def __init__(self, left: Operator, right: Operator):
         if left.output_shape != right.output_shape:
             raise ShapeMismatchException(
                 (
@@ -33,8 +33,8 @@ class ConstShapeOperatorBinaryOp(OperatorBinaryOp):
     def apply(self, field: np.ndarray, out: np.ndarray):
         return self._apply(field, out)
 
-class AddOperator(ConstShapeOperatorBinaryOp):
-    def __init__(self, left: CoreOperator, right: CoreOperator):
+class OperatorAddOp(ConstShapeOperatorBinaryOp):
+    def __init__(self, left: Operator, right: Operator):
         super().__init__(left, right)
 
     def _apply(self, field: np.ndarray, out: np.ndarray):
@@ -43,8 +43,8 @@ class AddOperator(ConstShapeOperatorBinaryOp):
         self._left.apply(field, out)
         out[:] += right_out[:]
 
-class SubtractOperator(ConstShapeOperatorBinaryOp):
-    def __init__(self, left: CoreOperator, right: CoreOperator):
+class OperatorSubtractOp(ConstShapeOperatorBinaryOp):
+    def __init__(self, left: Operator, right: Operator):
         super().__init__(left, right)
 
     def _apply(self, field: np.ndarray, out: np.ndarray):
@@ -53,8 +53,8 @@ class SubtractOperator(ConstShapeOperatorBinaryOp):
         self._left.apply(field, out)
         out[:] -= right_out[:]
 
-class ElementWiseMulOperator(ConstShapeOperatorBinaryOp):
-    def __init__(self, left: CoreOperator, right: CoreOperator):
+class OperatorElementWiseMulOp(ConstShapeOperatorBinaryOp):
+    def __init__(self, left: Operator, right: Operator):
         super().__init__(left, right, left.output_shape)
 
     def _apply(self, field: np.ndarray, out: np.ndarray):
@@ -63,8 +63,8 @@ class ElementWiseMulOperator(ConstShapeOperatorBinaryOp):
         self._left.apply(field, out)
         out[:] *= right_out[:]
 
-class ElementWiseDivOperator(ConstShapeOperatorBinaryOp):
-    def __init__(self, left: CoreOperator, right: CoreOperator):
+class OperatorElementWiseDivOp(ConstShapeOperatorBinaryOp):
+    def __init__(self, left: Operator, right: Operator):
         super().__init__(left, right, left.output_shape)
 
     def _apply(self, field: np.ndarray, out: np.ndarray):
@@ -117,8 +117,8 @@ def matmul_shape(a: tuple[int, ...], b: tuple[int, ...]) -> tuple[int, ...]:
     return tuple(batch) + (a[-2], b[-1])
 
 
-class MatMulOperator(OperatorBinaryOp):
-    def __init__(self, left: CoreOperator, right: CoreOperator):
+class OperatorMatMulOp(OperatorBinaryOp):
+    def __init__(self, left: Operator, right: Operator):
         output_shape = matmul_shape(left.output_shape, right.output_shape)
         super().__init__(left, right, output_shape)
 

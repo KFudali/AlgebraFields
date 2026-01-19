@@ -1,6 +1,6 @@
 import numpy as np
 
-from .expression import Expression
+from .core.expression import Expression
 from ..operator import Operator
 
 class ApplyOperatorExpr(Expression):

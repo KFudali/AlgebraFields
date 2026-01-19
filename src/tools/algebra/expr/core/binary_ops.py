@@ -1,12 +1,10 @@
 from tools.algebra.exceptions import ShapeMismatchException
-from .core_expression import CoreExpression
+from .expression import Expression
 
-
-class ExprBinaryOp(CoreExpression):
+class ExprBinaryOp(Expression):
     def __init__(
         self, 
-        left: CoreExpression, 
-        right: CoreExpression, 
+        left: Expression, right: Expression, 
         output_shape: tuple[int, ...]
     ):
         self.left = left
@@ -14,7 +12,7 @@ class ExprBinaryOp(CoreExpression):
         super().__init__(output_shape)
 
 class ShapeMatchedExprBinaryOp(ExprBinaryOp):
-    def __init__(self, left: CoreExpression, right: CoreExpression):
+    def __init__(self, left: Expression, right: Expression):
         if left.output_shape != right.output_shape:
             raise ShapeMismatchException(
                 (
@@ -27,28 +25,28 @@ class ShapeMatchedExprBinaryOp(ExprBinaryOp):
         
 
 class AddExpr(ShapeMatchedExprBinaryOp):
-    def __init__(self, left: CoreExpression, right: CoreExpression):
+    def __init__(self, left: Expression, right: Expression):
         super().__init__(left, right)
 
     def eval(self):
         return self.left.eval() + self.right.eval()
 
 class SubtractExpr(ShapeMatchedExprBinaryOp):
-    def __init__(self, left: CoreExpression, right: CoreExpression):
+    def __init__(self, left: Expression, right: Expression):
         super().__init__(left, right)
 
     def eval(self):
         return self.left.eval() - self.right.eval()
 
 class ElementWiseMulExpr(ShapeMatchedExprBinaryOp):
-    def __init__(self, left: CoreExpression, right: CoreExpression):
+    def __init__(self, left: Expression, right: Expression):
         super().__init__(left, right)
 
     def eval(self):
         return self.left.eval() * self.right.eval()
 
 class ElementWiseDivExpr(ShapeMatchedExprBinaryOp):
-    def __init__(self, left: CoreExpression, right: CoreExpression):
+    def __init__(self, left: Expression, right: Expression):
         super().__init__(left, right)
 
     def eval(self):
@@ -97,11 +95,9 @@ def matmul_shape(a: tuple[int, ...], b: tuple[int, ...]) -> tuple[int, ...]:
 
     return tuple(batch) + (a[-2], b[-1])
 
-
 class MatMulExpr(ExprBinaryOp):
-    def __init__(self, left: CoreExpression, right: CoreExpression):
-        matmul_shape(left.output_shape, right.output_shape)
-        output_shape = (left.output_shape[0], right.output_shape[1])
+    def __init__(self, left: Expression, right: Expression):
+        output_shape = matmul_shape(left.output_shape, right.output_shape)
         super().__init__(left, right, output_shape)
 
     def eval(self):

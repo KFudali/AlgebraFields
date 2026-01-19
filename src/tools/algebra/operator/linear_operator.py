@@ -1,7 +1,7 @@
 
 from abc import ABC, abstractmethod
-from .operator import Operator
-from ..expr.expression import Expression
+from .core.operator import Operator
+from ..expr.core.expression import Expression
 
 class LinearOperator(Operator, ABC):
     def __init__(

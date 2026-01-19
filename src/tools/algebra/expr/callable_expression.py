@@ -2,7 +2,7 @@ from typing import Callable
 import numpy as np
 
 from tools.algebra.exceptions import ShapeMismatchException
-from .expression import Expression
+from .core.expression import Expression
 
 
 class CallableExpression(Expression):

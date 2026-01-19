@@ -1,7 +1,7 @@
 from typing import Callable
 import numpy as np
 
-from .operator import Operator
+from .core.operator import Operator
 
 
 class CallableOperator(Operator):

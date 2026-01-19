@@ -1,6 +1,6 @@
 import numpy as np
 
-from .operator import Operator
+from .core.operator import Operator
 from tools.algebra.exceptions import ShapeMismatchException
 
 class OperatorChain(Operator):
