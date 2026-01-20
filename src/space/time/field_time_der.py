@@ -42,7 +42,7 @@ class FieldTimeDerivative(AbstractField, ABC):
         return self._dts[step]
 
     def _advance(self, dt: float):
-        self._value.advance(dt)
+        self._value.advance()
         self._dts.append(dt)
         if len(self._dts) > 1 + self.required_time_steps:
             self._dts.pop(-1)

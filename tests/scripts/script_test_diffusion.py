@@ -28,9 +28,13 @@ dFdt = space.time.explicit.EulerTimeDerivative(F)
 lam = 0.01
 op =  (lam * F.operator.laplace()) - dFdt.op().Ax()
 rhs = -dFdt.op().b()
-solve_les = space.system.LESExpr(
-    (lam * F.operator.laplace()) - dFdt.op().Ax(), -dFdt.op().b()
-)
+solve_les = space.system.LESExpr(op, rhs)
+solve_les.add_bc(bc_left)
+solve_les.add_bc(bc_right)
+solve_les.add_bc(bc_top)
+solve_les.add_bc(bc_bot)
 
 for dt in [0.0, 0.01, 0.02]:
     F.update(solve_les.solve()).eval()
+    F.advance(dt)
+    dFdt.advance(dt)

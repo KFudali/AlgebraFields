@@ -16,8 +16,10 @@ class ValueBuffer():
     def saved_steps(self) -> int: return self._saved_steps
 
     def set_saved_steps(self, steps: int):
-        if steps > self.saved_steps:
+        if (1 + steps) > self.saved_steps:
             self._saved_steps = steps
+            for step in range(0, 1 + self._saved_steps - len(self._values)):
+                self._values.append(np.zeros(self.shape))
     
     def get(self, past_step: int = 0) -> np.ndarray:
         if past_step >= len(self._values):
