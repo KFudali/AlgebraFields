@@ -25,11 +25,6 @@ class Expression(ABC):
     def _make_binary(self, op: ExprBinaryOp) -> Self:
         return op
 
-    @staticmethod 
-    def _neg_expr(op: Expression) -> Self:
-        from .unary_ops import NegExpr
-        return NegExpr(op)
-
     def __add__(self, other: "Expression" | float):
         from .binary_ops import AddExpr
         from .unary_ops import ScalarShiftExpr
@@ -96,4 +91,5 @@ class Expression(ABC):
         return NotImplemented
 
     def __neg__(self):
-        return self._neg_expr(self)
+        from .unary_ops import NegExpr
+        return self._make_unary(NegExpr(self))
