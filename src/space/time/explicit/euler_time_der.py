@@ -15,5 +15,5 @@ class EulerTimeDerivative(FieldTimeDerivative):
         def ones_op(field: np.ndarray, out: np.ndarray):
             out[:] = field[:] / self._dt()
         op = CallableFieldOperator(self.space, self.components, ones_op)
-        exp = self.field.prev_value(1) / self._dt()
+        exp = -self.field.prev_value(1) / self._dt()
         return FieldLinearOperator(self.space, self.components, op, exp)

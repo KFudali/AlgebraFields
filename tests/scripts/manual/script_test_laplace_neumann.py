@@ -2,7 +2,7 @@ import numpy as np
 from scipy.sparse.linalg import cg, gmres, LinearOperator
 import matplotlib.pyplot as plt
 
-N = 100
+N = 10
 N2 = N*N
 shape = (N, N)
 dx = 0.1
@@ -41,14 +41,13 @@ def apply_neumann(ids, ax, inward_dir, value):
 apply_neumann(right_ids, 1, -1, 10)
 apply_neumann(left_ids, 1, 1, 10)
 rhs[top_ids] = 10
-mod_rhs = rhs - A @ rhs
-direct_x = np.linalg.solve(A, mod_rhs)
+direct_x = np.linalg.solve(A, rhs)
 def matvec(x: np.ndarray) -> np.ndarray:
     out = np.zeros_like(x)
     out = A @ x
     return out
 linop = LinearOperator(shape=(A.shape), matvec=matvec, dtype=float)
-x, info = gmres(linop, mod_rhs, maxiter=100, rtol = 1e-8)
+x, info = gmres(linop, rhs, maxiter=100, rtol = 1e-8)
 u = x.copy()
 dir_u = direct_x.copy()
 u[top_ids] = 10
