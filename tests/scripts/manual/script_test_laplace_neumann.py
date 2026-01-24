@@ -2,7 +2,7 @@ import numpy as np
 from scipy.sparse.linalg import cg, LinearOperator
 import matplotlib.pyplot as plt
 
-N = 50
+N = 20
 N2 = N*N
 shape = (N, N)
 dx = 0.1
@@ -34,8 +34,9 @@ def apply_neumann(ids, ax, inward_dir, A):
         idx_in = idx.copy()
         idx_in[ax] += inward_dir
         j_in = np.ravel_multi_index(idx_in, shape)
+        A[i, :] = 0
         A[i, j_in] = 2 / dy**2
-        A[i, j_in - 2 * inward_dir] = 0 
+        A[i, i] = -2 / dy**2
 
 def apply_neumann_rhs(ids, value, rhs_array):
     for i in ids:
@@ -45,7 +46,7 @@ apply_neumann(left_ids, 1, 1, A)
 apply_neumann(right_ids, 1, -1, A)
 dirichlet_rhs_flux = A @ rhs
 apply_neumann_rhs(left_ids, 10, rhs)
-apply_neumann_rhs(right_ids, 10, rhs)
+apply_neumann_rhs(right_ids, -10, rhs)
 rhs -= dirichlet_rhs_flux
 
 def matvec(x: np.ndarray) -> np.ndarray:
@@ -59,6 +60,21 @@ u = x.copy()
 u[top_ids] = 10
 u[bot_ids] = 0
 U = u.reshape(N, N)
+
+def boundary_flux(ids, ax, inward_dir, dx, x):
+    fluxes = []
+    for i in ids:
+        idx = list(np.unravel_index(i, shape))
+        inward_idx = idx.copy()
+        inward_idx[ax] += inward_dir 
+        inward_id = np.ravel_multi_index(inward_idx, shape)
+        boundary_value = x[i]
+        inward_value = x[inward_id]
+        fluxes.append((boundary_value - inward_value) / dx)
+    return fluxes
+left_fluxes = boundary_flux(left_ids, 1, 1, dy, x)
+right_fluxes = boundary_flux(right_ids, 1, -1, dy, x)
+
 
 import matplotlib.pyplot as plt
 x = np.linspace(0, (N-1)*dx, N)
