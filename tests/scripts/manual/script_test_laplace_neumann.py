@@ -1,5 +1,5 @@
 import numpy as np
-from scipy.sparse.linalg import cg, gmres, LinearOperator
+from scipy.sparse.linalg import cg, LinearOperator
 import matplotlib.pyplot as plt
 
 N = 50
@@ -54,7 +54,7 @@ def matvec(x: np.ndarray) -> np.ndarray:
     return out
 
 linop = LinearOperator(shape=(A.shape), matvec=matvec, dtype=float)
-x, info = gmres(linop, rhs, maxiter=100, rtol = 1e-8)
+x, info = cg(linop, rhs, maxiter=100, rtol = 1e-8)
 u = x.copy()
 u[top_ids] = 10
 u[bot_ids] = 0
