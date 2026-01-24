@@ -30,8 +30,9 @@ def apply_neumann(ids, ax, inward_dir, A):
         idx_in = idx.copy()
         idx_in[ax] += inward_dir
         j_in = np.ravel_multi_index(idx_in, shape)
+        A[i, :] = 0
         A[i, j_in] = 2 / dy**2
-        A[i, j_in - 2 * inward_dir] = 0 
+        A[i, i] = -2 / dy**2
 
 def apply_neumann_rhs(ids, value, rhs_array):
     for i in ids:
@@ -75,6 +76,7 @@ for t in np.arange(0.01, 1.0, dt):
     rhs = prev_x.copy()
     rhs += cL * lap_rhs()
     rhs[top_ids] = 0
+    rhs[bot_ids] = 0
     prev_x, info = cg(linop, rhs, maxiter=100, rtol = 1e-8)
     prev_x[top_ids] = 10
     res.append(prev_x)
@@ -119,3 +121,17 @@ ax1.set_zlabel("u")
 fig.colorbar(surf1, ax=ax1, shrink=0.6, aspect=10, label='u')
 plt.tight_layout()
 plt.show()
+
+def boundary_flux(ids, ax, inward_dir, dx, x):
+    fluxes = []
+    for i in ids:
+        idx = list(np.unravel_index(i, shape))
+        inward_idx = idx.copy()
+        inward_idx[ax] += inward_dir 
+        inward_id = np.ravel_multi_index(inward_idx, shape)
+        boundary_value = x[i]
+        inward_value = x[inward_id]
+        fluxes.append((boundary_value - inward_value) / dx)
+    return fluxes
+left_fluxes = boundary_flux(left_ids, 1, 1, dy, res[-1])
+right_fluxes = boundary_flux(right_ids, 1, -1, dy, res[-1])
