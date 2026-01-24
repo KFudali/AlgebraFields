@@ -74,7 +74,7 @@ res = []
 for t in np.arange(0.01, 1.0, dt):
     rhs = prev_x.copy()
     rhs += cL * lap_rhs()
-    rhs[top_ids] = 0 <----- EXplain why i need this
+    rhs[top_ids] = 0
     prev_x, info = cg(linop, rhs, maxiter=100, rtol = 1e-8)
     prev_x[top_ids] = 10
     res.append(prev_x)
