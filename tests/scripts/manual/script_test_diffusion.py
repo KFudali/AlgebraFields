@@ -31,12 +31,12 @@ def apply_neumann(ids, ax, inward_dir, A):
         idx_in[ax] += inward_dir
         j_in = np.ravel_multi_index(idx_in, shape)
         A[i, :] = 0
-        A[i, j_in] = 2 / dy**2
-        A[i, i] = -2 / dy**2
+        A[i, j_in] = 1 / dy**2
+        A[i, i] = -1 / dy**2
 
 def apply_neumann_rhs(ids, value, rhs_array):
     for i in ids:
-        rhs_array[i] += 2 * value / dy
+        rhs_array[i] += 1 * value / dy
 
 apply_neumann(left_ids, 1, 1, L)
 apply_neumann(right_ids, 1, -1, L)
