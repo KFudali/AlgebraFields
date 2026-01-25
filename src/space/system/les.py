@@ -37,7 +37,7 @@ class LESExpr(EqSystem):
     def solve(self) -> FieldExpression:
         system = self._assemble()
         def solve_reshape() -> np.ndarray:
-            value = system.solve(method='gmres')
+            value = system.solve(method='cg')
             return self._Ax.reshape(value)
         return CallableFieldExpression(
             self._rhs.space, self._rhs.components, solve_reshape 
