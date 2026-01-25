@@ -27,12 +27,12 @@ F.apply_bc(bc_bot)
 F.apply_bc(bc_top)
 
 rhs = eq_space.field()
-# rhs.update(
-#     tools.algebra.expr.CallableExpression(
-#         rhs.shape, lambda: np.ones(shape = rhs.shape)
-#     )
-# ).eval()
-# ## lambda d^2/dxdx F = f ##
+rhs.update(
+    tools.algebra.expr.CallableExpression(
+        rhs.shape, lambda: 10* np.ones(shape = rhs.shape)
+    )
+).eval()
+## lambda d^2/dxdx F = f ##
 les = space.system.LESExpr(
     F.operator.laplace(), rhs.value()
 )

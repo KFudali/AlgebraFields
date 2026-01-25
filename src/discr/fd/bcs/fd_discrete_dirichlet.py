@@ -29,8 +29,8 @@ class FDDirichletBC(DiscreteDirichletBC):
         rhs[ids] = value
         mod_rhs = np.zeros_like(system.rhs)
         system.Ax.apply(rhs, mod_rhs)
-        system._rhs[:] -= mod_rhs[:] 
-        
+        system._rhs[:] -= mod_rhs[:]
+        system._rhs[ids] = 0
         system._Ax = CallableOperator(
             old_Ax.input_shape,
             old_Ax.output_shape,
