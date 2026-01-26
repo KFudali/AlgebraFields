@@ -10,10 +10,10 @@ class FDLaplaceOperator(Operator):
         super().__init__(grid.shape, grid.shape)
         self._grid = grid
 
-    def _apply(self, input: np.ndarray, out: np.ndarray):
-        if input.shape != self.input_shape:
+    def _apply(self, field: np.ndarray, out: np.ndarray):
+        if field.shape != self.input_shape:
             raise ShapeMismatchException(
-                f"Cannot apply to an array. Input array shape: {input.shape}, ",
+                f"Cannot apply to an array. Input array shape: {field.shape}, ",
                 f"Operator input shape: {self.input_shape}"
             )
         if out.shape != self.output_shape:
@@ -21,7 +21,7 @@ class FDLaplaceOperator(Operator):
                 f"Cannot apply to an array. Output array shape: {out.shape}, ",
                 f"Operator input shape: {self.output_shape}"
             )
-        ndim = input.ndim
+        ndim = field.ndim
         center = (slice(1, -1),) * ndim
         out[:] = 0 
         for axis in range(ndim):
@@ -31,5 +31,6 @@ class FDLaplaceOperator(Operator):
             plus[axis] = slice(2, None)
             minus[axis] = slice(None, -2)
             out[center] += (
-                input[tuple(plus)] - 2.0 * input[center] + input[tuple(minus)]
+                field[tuple(plus)] - 2.0 * field[center] + field[tuple(minus)]
             ) / h**2
+        out[np.unravel_index(self._grid.boundary_ids, self._grid.shape)] = 0
