@@ -78,7 +78,9 @@ class StructuredGridND:
         ]
 
         idx_nd = np.array(list(product(*ranges)), dtype=int)
-        return self.flat_id_arr(idx_nd)
+        flat_ids = self.flat_id_arr(idx_nd)
+        if axis % 2 == 1: return flat_ids[1:-1]
+        return flat_ids
 
 
     def left_ids(self, axis: int) -> np.ndarray:
