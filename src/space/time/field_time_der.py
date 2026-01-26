@@ -8,7 +8,7 @@ class FieldTimeDerivative(AbstractField, ABC):
     def __init__(self, field: Field, required_time_steps: int):
         super().__init__(field.space, field.components)
         self._value = ValueBuffer(field.shape)
-        self._dts: list[float] = [1.0]
+        self._dts: list[float] = [0.01]
         self._source = field
         self._req_time_steps = required_time_steps
         field.set_saved_steps(required_time_steps)
