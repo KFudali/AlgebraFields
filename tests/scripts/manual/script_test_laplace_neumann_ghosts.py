@@ -25,8 +25,9 @@ A += (np.eye(N2, N2, -1) + np.eye(N2, N2, 1)) / dx**2
 A += (np.eye(N2, N2, -(N)) + np.eye(N2, N2, (N))) / dy**2
 rhs = np.zeros(shape = np.prod(shape))
 
-def apply_neumann(ids, ax, inward_dir, A):
-    for i in ids:
+def apply_neumann(ids, ax, inward_dir, A, value):
+    rhs = np.zeros(ids.shape)
+    for c, i in enumerate(ids):
         idx = list(np.unravel_index(i, shape))
         idx_in = idx.copy()
         idx_in[ax] += inward_dir
@@ -34,24 +35,23 @@ def apply_neumann(ids, ax, inward_dir, A):
         offset =  j_in - i
         j_out = i - offset
         A[i, j_in] += A[i, j_out]
+        rhs[c] = A[i, j_out] * 2 * dx * value
         A[i, j_out] = 0
+    return rhs
 
-apply_neumann(left_ids, 1, 1, A)
-apply_neumann(right_ids, 1, -1, A)
+left_neumann_value = 20
+right_neumann_value = -20
+
+neumann_rhs = np.zeros_like(rhs)
+
+neumann_rhs[left_ids] = apply_neumann(left_ids, 1, 1, A, left_neumann_value)
+neumann_rhs[right_ids] = apply_neumann(right_ids, 1, -1, A, right_neumann_value)
 A[dirichlet_ids, :] = 0
 A[dirichlet_ids, dirichlet_ids] = 1
 dirichlet_rhs = np.zeros_like(rhs)
 dirichlet_rhs[top_ids] = 10
 dirichlet_rhs = -A @ dirichlet_rhs
 dirichlet_rhs[dirichlet_ids] = 0
-
-neumann_rhs = np.zeros_like(rhs)
-
-left_neumann_value = 20
-right_neumann_value = -20
-
-neumann_rhs[left_ids] = 2 * left_neumann_value / dy 
-neumann_rhs[right_ids] = 2 * right_neumann_value / dy
 
 rhs = rhs + dirichlet_rhs + neumann_rhs
 
