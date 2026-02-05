@@ -2,7 +2,7 @@ import numpy as np
 from scipy.sparse.linalg import cg, LinearOperator
 import matplotlib.pyplot as plt
 
-N = 20
+N = 10
 N2 = N*N
 shape = (N, N)
 dx = 0.1
@@ -31,50 +31,46 @@ def apply_neumann(ids, ax, inward_dir, A):
         idx_in[ax] += inward_dir
         j_in = np.ravel_multi_index(idx_in, shape)
         A[i, :] = 0
-        A[i, j_in] = 1 / dy**2
-        A[i, i] = -1 / dy**2
+        A[i, j_in] = 2 / dy**2
+        A[i, i] = -2 / dy**2
 
 def apply_neumann_rhs(ids, value, rhs_array):
     for i in ids:
-        rhs_array[i] += 1 * value / dy
+        rhs_array[i] += 2 * value / dy
 
 apply_neumann(left_ids, 1, 1, L)
 apply_neumann(right_ids, 1, -1, L)
 L[dirichlet_ids, :] = 0
 L[dirichlet_ids, dirichlet_ids] = 1
 
-def lap_rhs():
+def dir_rhs(ids, value, op):
     dir_rhs = np.zeros_like(rhs)
-    dir_rhs[top_ids] = 10
-    lap_rhs = -L @ dir_rhs
-    apply_neumann_rhs(left_ids, 10, lap_rhs)
-    apply_neumann_rhs(right_ids, -10, lap_rhs)
-    return lap_rhs
-rhs = np.zeros(shape = np.prod(shape))
-rhs[top_ids] = 10
-rhs += lap_rhs()
-steady_sol = np.linalg.solve(L, rhs)
+    dir_rhs[ids] = value
+    return -op(dir_rhs)
 
 dt = 0.01
 # -dt * lambda * d^2/d^2 + I = u(t-1)
 diff = 1
-cL = -(dt * diff)
-I = np.eye(N2, N2)
+cL = -diff
+I = np.eye(N2, N2) / dt
 A =  cL * L + I
 A[dirichlet_ids, dirichlet_ids] = 1
-
 def matvec(x: np.ndarray) -> np.ndarray:
     out = np.zeros_like(x)
     out = A @ x
     return out
 linop = LinearOperator(shape=(A.shape), matvec=matvec, dtype=float)
 
+rhs = np.zeros(N2)
 prev_x = np.zeros_like(rhs)
 prev_x[top_ids] = 10
 res = []
 for t in np.arange(0.01, 1.0, dt):
-    rhs = prev_x.copy()
-    rhs += cL * lap_rhs()
+    rhs = prev_x.copy() / dt
+    rhs += dir_rhs(top_ids, 10, linop)
+    rhs += dir_rhs(bot_ids, 0, linop)
+    apply_neumann_rhs(left_ids, 10, rhs)
+    apply_neumann_rhs(right_ids, -10, rhs)
     rhs[top_ids] = 0
     rhs[bot_ids] = 0
     prev_x, info = cg(linop, rhs, maxiter=100, rtol = 1e-8)
@@ -135,3 +131,5 @@ def boundary_flux(ids, ax, inward_dir, dx, x):
     return fluxes
 left_fluxes = boundary_flux(left_ids, 1, 1, dy, res[-1])
 right_fluxes = boundary_flux(right_ids, 1, -1, dy, res[-1])
+print(left_fluxes)
+print(right_fluxes)

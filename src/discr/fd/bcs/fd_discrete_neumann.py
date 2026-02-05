@@ -30,11 +30,12 @@ class FDNeumannBC(DiscreteNeumannBC):
         ids = self.boundary.ids
         def modified_apply(field: np.ndarray, out: np.ndarray):
             old_Ax.apply(field, out)
-            out[ids] = (-field[ids] + field[inward_ids]) / h**2
+            contrib = -2*(-field[ids] + field[inward_ids]) / h**2
+            out[ids] += contrib
 
         system._Ax = CallableOperator(
             old_Ax.input_shape,
             old_Ax.output_shape,
             modified_apply
         )
-        system.rhs[self.boundary.ids] += self.value / h
+        system.rhs[self.boundary.ids] += 2 * self.value / h

@@ -2,7 +2,7 @@ import numpy as np
 from scipy.sparse.linalg import cg, LinearOperator
 import matplotlib.pyplot as plt
 
-N = 20
+N = 4
 N2 = N*N
 shape = (N, N)
 dx = 0.1
@@ -24,30 +24,47 @@ A = np.eye(N2, N2) * (-2 / dx**2 - 2 / dy**2)
 A += (np.eye(N2, N2, -1) + np.eye(N2, N2, 1)) / dx**2
 A += (np.eye(N2, N2, -(N)) + np.eye(N2, N2, (N))) / dy**2
 rhs = np.zeros(shape = np.prod(shape))
-rhs[top_ids] = 10
-A[dirichlet_ids, :] = 0
-A[dirichlet_ids, dirichlet_ids] = 1
+
+A[boundary_ids, :] = 0
+A[boundary_ids, boundary_ids] = 1
+dirichlet_rhs = np.zeros_like(rhs)
+dirichlet_rhs[top_ids] = 10
+dirichlet_rhs = -A @ dirichlet_rhs
+dirichlet_rhs[top_ids] = 0
 
 def apply_neumann(ids, ax, inward_dir, A):
     for i in ids:
         idx = list(np.unravel_index(i, shape))
         idx_in = idx.copy()
+        idx_2in = idx.copy()
         idx_in[ax] += inward_dir
+        idx_2in[ax] += 2*inward_dir
         j_in = np.ravel_multi_index(idx_in, shape)
-        A[i, :] = 0
-        A[i, j_in] = 2 / dy**2
-        A[i, i] = -2 / dy**2
+        j_2in = np.ravel_multi_index(idx_2in, shape)
+        # First order
+        # A[i, :] = 0
+        # A[i, i] = -1 / dy
+        # A[i, j_in] = 1 / dy
 
-def apply_neumann_rhs(ids, value, rhs_array):
-    for i in ids:
-        rhs_array[i] += 2 * value / dy
+        # Second order
+        A[i, :] = 0
+        A[i, i] = 3/2 * 1/dy
+        A[i, j_in] = -2 * 1/dy
+        A[i, j_2in] = 1/2 * 1/dy
+
 
 apply_neumann(left_ids, 1, 1, A)
 apply_neumann(right_ids, 1, -1, A)
-dirichlet_rhs_flux = A @ rhs
-apply_neumann_rhs(left_ids, 10, rhs)
-apply_neumann_rhs(right_ids, -10, rhs)
-rhs -= dirichlet_rhs_flux
+
+neumann_rhs = np.zeros_like(rhs)
+
+left_neumann_value = 10
+right_neumann_value = -10
+
+neumann_rhs[left_ids] = left_neumann_value
+neumann_rhs[right_ids] = right_neumann_value
+
+rhs = rhs + dirichlet_rhs + neumann_rhs
 
 def matvec(x: np.ndarray) -> np.ndarray:
     out = np.zeros_like(x)
@@ -55,7 +72,8 @@ def matvec(x: np.ndarray) -> np.ndarray:
     return out
 
 linop = LinearOperator(shape=(A.shape), matvec=matvec, dtype=float)
-x, info = cg(linop, rhs, maxiter=100, rtol = 1e-8)
+x = np.linalg.solve(A, rhs)
+# x, info = cg(linop, rhs, maxiter=100, rtol = 1e-8)
 u = x.copy()
 u[top_ids] = 10
 u[bot_ids] = 0
@@ -74,7 +92,8 @@ def boundary_flux(ids, ax, inward_dir, dx, x):
     return fluxes
 left_fluxes = boundary_flux(left_ids, 1, 1, dy, x)
 right_fluxes = boundary_flux(right_ids, 1, -1, dy, x)
-
+print(left_fluxes)
+print(right_fluxes)
 
 import matplotlib.pyplot as plt
 x = np.linspace(0, (N-1)*dx, N)
