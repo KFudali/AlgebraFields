@@ -44,7 +44,7 @@ class FDDomain(Domain):
             right = self._grid.right_ids(axis=ax)
             left_id = self.mark_as_boundary(left, ax, 1)
             right_id = self.mark_as_boundary(right, ax, -1)
-            self._grid_boundaries[ax] = (left_id, right_id)
+            self._grid_boundaries[ax] = (left_id.id, right_id.id)
 
     def mark_as_subdomain(self, ids: np.ndarray) -> FDSubDomain:
         subdomain_id = SubDomainId(self._next_subdomain_id)
