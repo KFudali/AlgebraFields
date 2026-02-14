@@ -17,7 +17,7 @@ class FDStencil():
         for ax in range(len(shape)):
             offsets = self.ax_contrib_range(ax)
             if not offsets:
-                region.append(slice(None))
+                region.append(slice(0, shape[ax]))
                 continue
 
             max_off = max(abs(k) for k in offsets)
@@ -26,15 +26,23 @@ class FDStencil():
         return tuple(region)
 
     def boundary_region(
-        self, shape: tuple[int, ...], ax: int, inward_dir: int
+        self,
+        shape: tuple[int, ...],
+        ax: int,
+        inward_dir: int,
     ) -> tuple[slice, ...]:
-
-        region = [slice(None)] * len(shape)
+        assert len(shape) == 2, "Temporary 2D-only corner handling"
+        region = [slice(0, shape[i]) for i in range(2)]
 
         if inward_dir == 1:
             region[ax] = slice(0, 1)
         else:
             region[ax] = slice(shape[ax] - 1, shape[ax])
+
+        # ---- TEMPORARY CORNER EXCLUSION ----
+        if ax == 1:
+            # strip corners along axis 0
+            region[0] = slice(1, shape[0] - 1)
 
         return tuple(region)
 
@@ -62,19 +70,19 @@ class FDStencil():
             for k, c in contrib.items():
                 src_region = self.shift_region(region, ax, k)
                 out[region] += c * field[src_region]
+    
     def apply(
         self, field: np.ndarray, out: np.ndarray,
     ):
         region = self.interior_region(field.shape)
         self.apply_to_region(field, out, region)
 
-    def copy(self) -> "FDStencil":
-        new = FDStencil()
-        new._contrib = {
+    def copy(self):
+        return FDStencil({
             ax: dict(offsets)
             for ax, offsets in self._contrib.items()
-        }
-        return new
+        })
+
 
     def _combine(self, other: "FDStencil", op):
         result = self.copy()

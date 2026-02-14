@@ -2,11 +2,11 @@ import numpy as np
 from scipy.sparse.linalg import cg, LinearOperator
 import matplotlib.pyplot as plt
 
-N = 50
+N = 10
 N2 = N*N
 shape = (N, N)
-dx = 0.01
-dy = 0.01
+dx = 0.1
+dy = 0.1
 ni, nj = shape
 top_ids = np.arange(0,N)
 bot_ids = np.arange(N*(N-1), N*N)
@@ -39,8 +39,8 @@ def apply_neumann(ids, ax, inward_dir, A, value):
         A[i, j_out] = 0
     return rhs
 
-left_neumann_value = 20
-right_neumann_value = -20
+left_neumann_value = 0 
+right_neumann_value = 0
 
 neumann_rhs = np.zeros_like(rhs)
 

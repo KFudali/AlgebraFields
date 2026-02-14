@@ -14,7 +14,7 @@ grid = StructuredGridND((N, N), (h,h))
 domain = FDDomain(grid)
 discr = FDDiscretization(domain)
 
-def apply_neumann(op: FDStencilOperator, bid: BoundaryId, value: float) -> np.ndarray:
+def apply_neumann(op: FDStencilOperator, bid: BoundaryId, g: float) -> np.ndarray:
     stencil = op._stencils[bid]
     boundary = domain.boundary(bid)
     h = boundary.grid.ax_spacing(boundary.axis)
@@ -24,9 +24,9 @@ def apply_neumann(op: FDStencilOperator, bid: BoundaryId, value: float) -> np.nd
             contrib = stencil._contrib[boundary.axis][offset]
             stencil._contrib[boundary.axis][-offset] += contrib
             stencil._contrib[boundary.axis].pop(offset)
-            b.flat[boundary.ids] = - contrib * 2 * h * value
+            b.flat[boundary.ids] = - contrib * 2 * h * g
     return b
-
+# We are missing -1000 on the direction Y along the boundary (contribution on neumann boundary node from corner)
 def apply_dirichlet(op: FDStencilOperator, bid: BoundaryId, value: float) -> np.ndarray:
     stencil = op._stencils[bid]
     boundary = domain.boundary(bid)
@@ -50,7 +50,8 @@ laplace.set_interior_stencil(lap_stencil)
 for bid in bids: 
     laplace.set_boundary_stencil(bid, copy.deepcopy(lap_stencil))
 
-rhs = -apply_dirichlet(laplace, top, 10)
+rhs = np.zeros(grid.shape)
+rhs -= apply_dirichlet(laplace, top, 10)
 rhs -= apply_dirichlet(laplace, bottom, 0)
 rhs -= apply_neumann(laplace, left, 0)
 rhs -= apply_neumann(laplace, right, 0)
