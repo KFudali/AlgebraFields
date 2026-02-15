@@ -1,4 +1,5 @@
 from scipy.sparse.linalg import cg, LinearOperator
+import matplotlib.pyplot as plt
 import numpy as np
 import copy
 
@@ -8,8 +9,8 @@ from stencils.fd_stencil import FDStencil
 from discr.fd import FDDiscretization, FDDomain
 from discr.core.domain import BoundaryId
 
-N = 200
-h = 0.01
+N = 20
+h = 0.1
 grid = StructuredGridND((N, N), (h,h))
 domain = FDDomain(grid)
 discr = FDDiscretization(domain)
@@ -51,30 +52,69 @@ laplace.set_interior_stencil(lap_stencil)
 for bid in bids: 
     laplace.set_boundary_stencil(bid, copy.deepcopy(lap_stencil))
 
+dt = 0.01
+ones_stencil = FDStencil({0: {0: 1 / dt}, 1: {0: 0}})
+ones_op = FDStencilOperator(discr)
+ones_op.set_interior_stencil(ones_stencil)
+for bid in bids: 
+    ones_op.set_boundary_stencil(bid, copy.deepcopy(ones_stencil))
+diff = 1
+op = -diff * laplace + ones_op
+
 rhs = np.zeros(grid.shape)
-rhs -= apply_dirichlet(laplace, top, 10)
-rhs -= apply_dirichlet(laplace, bottom, 0)
-rhs -= apply_neumann(laplace, left, 20)
-rhs -= apply_neumann(laplace, right, -20)
+rhs -= apply_dirichlet(op, top, 10)
+rhs -= apply_dirichlet(op, bottom, 0)
+rhs -= apply_neumann(op, left, 20)
+rhs -= apply_neumann(op, right, -20)
 
 def matvec(x: np.ndarray) -> np.ndarray:
     out = np.zeros_like(x)
-    laplace.apply(x.reshape(grid.shape), out.reshape(grid.shape))
+    op.apply(x.reshape(grid.shape), out.reshape(grid.shape))
     return out
-
 linop = LinearOperator(shape=(N*N, N*N), matvec=matvec, dtype=float)
 
-iter= [0]
-def iter_callback(xk):
-    iter[0] += 1
-x, info = cg(linop, rhs.flatten(), maxiter=1000, rtol = 1e-6, callback = iter_callback)
-print(f"CG converged in {iter[0]} iterations.")
+top_ids = domain.boundary(top).ids
+bot_ids = domain.boundary(bottom).ids
+prev_x = np.zeros_like(rhs)
+res = []
+for t in np.arange(0.01, 1.0, dt):
+    t_rhs = prev_x.copy() / dt
+    t_rhs += rhs
+    prev_x, info = cg(linop, t_rhs.flat, maxiter=1000, rtol = 1e-8)
+    prev_x = prev_x.reshape(t_rhs.shape)
+    u = prev_x.copy()
+    u.flat[top_ids] = 10.0
+    u.flat[bot_ids] = 0.0
+    res.append(u)
 
-u = x.copy()
-u[domain.boundary(top).ids] = 10
-u[domain.boundary(bottom).ids] = 0
-U = u.reshape(N, N)
-import matplotlib.pyplot as plt
+
+import matplotlib.animation as animation
+
+fields = [u.reshape((N, N)) for u in res]
+vmin = min(f.min() for f in fields)
+vmax = max(f.max() for f in fields)
+
+fig, ax = plt.subplots()
+cont = ax.contourf(fields[0], levels=20)
+cbar = fig.colorbar(cont, ax=ax)
+
+def update(frame):
+    ax.clear()
+    ax.contourf(fields[frame], levels=20)
+    ax.set_title(f"t = {frame * dt:.2f}")
+
+ani = animation.FuncAnimation(
+    fig,
+    update,
+    frames=len(fields),
+    interval=100,
+    blit=False
+)
+
+plt.show()
+res[-1].flat[top_ids] = 10
+res[-1].flat[bot_ids] = 0
+U = res[-1].reshape(N, N)
 x = np.linspace(0, (N-1)*h, N)
 y = np.linspace(0, (N-1)*h, N)
 X, Y = np.meshgrid(x, y)
