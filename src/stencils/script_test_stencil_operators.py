@@ -8,8 +8,8 @@ from stencils.fd_stencil import FDStencil
 from discr.fd import FDDiscretization, FDDomain
 from discr.core.domain import BoundaryId
 
-N = 10
-h = 0.1
+N = 200
+h = 0.01
 grid = StructuredGridND((N, N), (h,h))
 domain = FDDomain(grid)
 discr = FDDiscretization(domain)
@@ -33,10 +33,11 @@ def apply_dirichlet(op: FDStencilOperator, bid: BoundaryId, value: float) -> np.
     u = np.zeros(grid.shape)
     u.flat[boundary.ids] = value
     rhs = np.zeros_like(u)
+    for ax in range(0, grid.ndim):
+        if ax != boundary.axis: 
+            stencil._contrib[ax] = {0: 0}
     stencil.apply(u, rhs)
-    stencil._contrib[0] = {0: 1}
-    for ax in range(1, grid.ndim):
-        stencil._contrib[ax] = {0: 0}
+    stencil._contrib[boundary.axis] = {0: 1}
     return rhs
 
 top, bottom = domain.grid_boundaries(0)
@@ -53,8 +54,8 @@ for bid in bids:
 rhs = np.zeros(grid.shape)
 rhs -= apply_dirichlet(laplace, top, 10)
 rhs -= apply_dirichlet(laplace, bottom, 0)
-rhs -= apply_neumann(laplace, left, 0)
-rhs -= apply_neumann(laplace, right, 0)
+rhs -= apply_neumann(laplace, left, 20)
+rhs -= apply_neumann(laplace, right, -20)
 
 def matvec(x: np.ndarray) -> np.ndarray:
     out = np.zeros_like(x)
@@ -62,7 +63,12 @@ def matvec(x: np.ndarray) -> np.ndarray:
     return out
 
 linop = LinearOperator(shape=(N*N, N*N), matvec=matvec, dtype=float)
-x, info = cg(linop, rhs.flatten(), maxiter=100, rtol = 1e-8)
+
+iter= [0]
+def iter_callback(xk):
+    iter[0] += 1
+x, info = cg(linop, rhs.flatten(), maxiter=1000, rtol = 1e-6, callback = iter_callback)
+print(f"CG converged in {iter[0]} iterations.")
 
 u = x.copy()
 u[domain.boundary(top).ids] = 10

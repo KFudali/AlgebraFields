@@ -2,11 +2,11 @@ import numpy as np
 from scipy.sparse.linalg import cg, LinearOperator
 import matplotlib.pyplot as plt
 
-N = 10
+N = 200 
 N2 = N*N
 shape = (N, N)
-dx = 0.1
-dy = 0.1
+dx = 0.01
+dy = 0.01
 ni, nj = shape
 top_ids = np.arange(0,N)
 bot_ids = np.arange(N*(N-1), N*N)
