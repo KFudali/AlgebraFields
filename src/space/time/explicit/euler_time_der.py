@@ -1,19 +1,22 @@
-import numpy as np
-from space.core import FieldLinearOperator, CallableFieldOperator
-from space.field import Field
-from ..field_time_der import FieldTimeDerivative
 
+from space.field.field import Field
+from space.field.operators import FieldOperatorExpression
+from ..time_series import TimeSeries
+import algebra
 
-class EulerTimeDerivative(FieldTimeDerivative):
-    def __init__(self, field: Field):
-        super().__init__(field, required_time_steps=1)
+class EulerTimeDer(FieldOperatorExpression):
+    def __init__(self, field: Field, time: TimeSeries):
+        field.save_past(1)
+        
+        self._discr = field.space.discretization
+        self._time = time
 
-    def _calculate(self) -> np.ndarray:
-        return (self.field.value().eval() - self.field.prev_value(1).eval()) / self._dt()
-    
-    def op(self) -> FieldLinearOperator:
-        def ones_op(field: np.ndarray, out: np.ndarray):
-            out[:] += field[:] / self._dt()
-        op = CallableFieldOperator(self.space, self.components, ones_op)
-        exp = -self.field.prev_value(1) / self._dt()
-        return FieldLinearOperator(self.space, self.components, op, exp)
+        op = self._discr.operators.eye() / self._dt()
+        self._rhs = field.past(1).value() / self._dt()
+        super().__init__(field.value(), op)
+
+    def rhs(self) -> algebra.Expression:
+        return self._rhs
+
+    def _dt(self) -> float:
+       return self._time.last_dt()

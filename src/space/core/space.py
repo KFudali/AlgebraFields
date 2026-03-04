@@ -1,4 +1,4 @@
-from discr.core import Discretization, DiscreteBCs, DiscreteOperators
+from discretization.core import Discretization, DiscreteBCFactory, DiscreteOperatorsFactory
 
 class Space():
     def __init__(self, discretization: Discretization):
@@ -13,9 +13,9 @@ class Space():
         return self._discretization.shape
 
     @property
-    def bcs(self) -> DiscreteBCs:
+    def bcs(self) -> DiscreteBCFactory:
         return self._discretization.bcs
     
     @property
-    def operators(self) -> DiscreteOperators:
+    def operators(self) -> DiscreteOperatorsFactory:
         return self._discretization.operators

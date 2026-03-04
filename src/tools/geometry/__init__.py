@@ -1,2 +1,1 @@
-from . import grid
-from . import mesh
+from .structured_gridND import StructuredGridND

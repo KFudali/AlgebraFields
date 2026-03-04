@@ -1,59 +1,42 @@
-import numpy as np
+from tools.buffer import ValueBuffer, ShiftProxyValueBuffer
 
-from discr.core.domain import Boundary
-from discr.core.bcs import DiscreteBC
+import algebra
+from space.core import Space
+from .core import AbstractField, FieldValue, FieldUpdate
 
-from tools.algebra import Expression
-from space.core import AbstractField, Space
-
-from .field_update import FieldUpdate
-from .field_value import FieldValue
-from .value_buffer import ValueBuffer
-from .operators import FieldOperators
-
-class Field(AbstractField):
-    def __init__(self, space: Space, components: int):
+class FieldView(AbstractField):
+    def __init__(
+        self, 
+        space: Space, components: int,
+        value_buffer: ValueBuffer
+    ):
         super().__init__(space, components)
-        self._value = ValueBuffer(self.shape)
-        self._bcs = dict[Boundary, DiscreteBC]()
-        self._ops = FieldOperators(field=self)
-
-    def _get_current(self) -> np.ndarray:
-        return self._value.get() 
-
-    def _set_current(self, value: np.ndarray): 
-        self._value.set_current(value)
-
-    def _get_past(self, past_offset: int = 1) -> np.ndarray:
-        return self._value.get(past_offset)
-
-    def advance(self, dt: float):
-        self._advance(dt)
-
-    def _advance(self, dt: float):
-        self._value.advance()
-
-    def prev_value(self, past_offset: int = 1) -> FieldValue:
-        if past_offset > self._value.saved_steps:
-            self._value.set_saved_steps(past_offset)
-        return FieldValue(self, past_offset)
+        if self.shape != self._value_buffer:
+            raise algebra.exceptions.ShapeMismatchException(
+                "Passed value buffer does not match field shape"
+            )
+        self._value_buffer = value_buffer
 
     def value(self) -> FieldValue:
-        return FieldValue(self, past_offset=0)
+        return FieldValue(self)
 
-    def update(self, expression: Expression) -> FieldUpdate:
-        return FieldUpdate(self, expression)
+    def save_past(self, steps: int):
+        self._value_buffer.set_saved_steps(steps)
 
-    def set_saved_steps(self, steps: int):
-        self._value.set_saved_steps(steps)
+    def past(self, steps: int = 1) -> "FieldView":
+        self.save_past(steps)
+        return FieldView(ShiftProxyValueBuffer(self._value_buffer, steps))
 
-    def apply_bc(self, bc: DiscreteBC):
-        self._bcs[bc.boundary] = bc
+    def advance(self):
+        self._value_buffer.advance()
 
-    @property
-    def bcs(self) -> list[DiscreteBC]:
-        return self._bcs.values()
-    
-    @property
-    def operator(self) -> FieldOperators:
-        return self._ops
+class Field(FieldView):
+    def __init__(
+        self, 
+        space: Space, components: int,
+        value_buffer: ValueBuffer,
+    ):
+        super().__init__(space, components, value_buffer)
+
+    def set_value(self, expr: algebra.Expression) -> FieldUpdate:
+        return FieldUpdate(self, expr)
