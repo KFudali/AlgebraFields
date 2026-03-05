@@ -4,7 +4,7 @@ from typing import Self
 import numpy as np
 
 from algebra.exceptions import ShapeMismatchException
-from algebra.expression import Expression
+from algebra.expression import Expression, ScalarExpression
 
 
 class Operator(ABC):
@@ -52,15 +52,15 @@ class Operator(ABC):
         pass
 
     @abstractmethod
-    def __mul__(self, other: float) -> Self:
+    def __mul__(self, other: float | ScalarExpression) -> Self:
         pass
 
     @abstractmethod
-    def __truediv__(self, other: float) -> Self:
+    def __truediv__(self, other: float | ScalarExpression) -> Self:
         pass
 
     def __sub__(self, other: Operator) -> Self:
         return self + (-other)
 
-    def __rmul__(self, other: float | Expression) -> Self:
+    def __rmul__(self, other: float | ScalarExpression) -> Self:
         return self * other

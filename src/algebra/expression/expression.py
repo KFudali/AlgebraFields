@@ -3,6 +3,8 @@ from abc import ABC, abstractmethod
 from typing import Self
 import numpy as np
 
+from .scalar_expression import ScalarExpression
+
 class Expression(ABC):
     def __init__(self, output_shape: tuple[int, ...]):
         self._output_shape = output_shape
@@ -20,25 +22,25 @@ class Expression(ABC):
         pass
 
     @abstractmethod
-    def __add__(self, other: Expression | float) -> Self:
+    def __add__(self, other: Expression | ScalarExpression | float ) -> Self:
         pass
 
     @abstractmethod
-    def __mul__(self, other: Expression | float) -> Self:
+    def __mul__(self, other: Expression | ScalarExpression | float) -> Self:
         pass
 
     @abstractmethod
-    def __truediv__(self, other: Expression | float) -> Self:
+    def __truediv__(self, other: Expression | ScalarExpression | float) -> Self:
         pass
 
-    def __radd__(self, other: float) -> Self:
+    def __radd__(self, other: Expression | ScalarExpression | float) -> Self:
         return self + other
 
-    def __sub__(self, other: Expression | float) -> Self:
+    def __sub__(self, other: Expression | ScalarExpression | float) -> Self:
         return self + (-other)
 
-    def __rsub__(self, other: float) -> Self:
+    def __rsub__(self, other: Expression | ScalarExpression | float) -> Self:
         return (-self) + other
 
-    def __rmul__(self, other: float) -> Self:
+    def __rmul__(self, other: Expression | ScalarExpression | float) -> Self:
         return self * other

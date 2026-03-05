@@ -18,5 +18,5 @@ class EulerTimeDer(FieldOperatorExpression):
     def rhs(self) -> algebra.Expression:
         return self._rhs
 
-    def _dt(self) -> float:
-       return self._time.last_dt()
+    def _dt(self) -> algebra.ScalarExpression:
+       return algebra.ScalarExpression(self._time.last_dt)

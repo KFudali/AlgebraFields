@@ -22,7 +22,6 @@ class ShapeMatchedExprBinaryOp(ExprBinaryOp):
                 )
             )
         super().__init__(left, right, right.output_shape)
-        
 
 class AddExpr(ShapeMatchedExprBinaryOp):
     def __init__(self, left: Expression, right: Expression):
