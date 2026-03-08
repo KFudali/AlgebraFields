@@ -4,25 +4,36 @@ from typing import Callable
 import numpy as np
 
 import algebra
+from algebra.operator import CombinedOperator
 from .equation import Equation
 from discr.core import DiscreteBC
 
 class LES(Equation):
     def __init__(
         self, 
-        linop: algebra.operator.CombinedOperator, 
+        linop: algebra.operator.CombinedOperator,
         rhs: algebra.Expression
     ):
+        # is_combined = isinstance(linop, CombinedOperator)
+        # is_combined_wrapper = isinstance(linop.core, CombinedOperator)
+        # if not is_combined:
+        #     if is_combined_wrapper: 
+        #         linop = linop.core
+        #     else:
+        #         raise ValueError(
+        #             "LES only accepts CombinedOperator or CombinedOperator wrapper as Ax."
+        #         )
         self._linop = linop
         self._rhs = rhs
-        self._bcs = set()
+        self._bcs = list[DiscreteBC]()
+
 
     @property
-    def bcs(self) -> set[DiscreteBC]:
+    def bcs(self) -> list[DiscreteBC]:
         return self._bcs
 
     def add_bcs(self, bcs: Iterable[DiscreteBC]):
-        [self._bcs.add(bc) for bc in bcs]
+        [self._bcs.append(bc) for bc in bcs if bc not in self._bcs]
 
     def solve(self) -> algebra.Expression:
         Ax, rhs = self._assemble()
@@ -34,10 +45,10 @@ class LES(Equation):
     def _assemble(self) -> tuple[LinearOperator, np.ndarray]:
         rhs = self._rhs.eval()
         linop = self._linop.copy()
-        rhs -= linop.take_b().eval()
+        rhs -= linop.core.take_b().eval()
         for bc in self.bcs:
-            bc.apply(linop.Ax.core, rhs)
-        matvec = self._assemble_matvec(linop.Ax)
+            bc.apply(linop.core.Ax, rhs[0])
+        matvec = self._assemble_matvec(linop)
         N = rhs.flatten().shape
         linop = LinearOperator(shape=(*N, *N), matvec=matvec, dtype=float)
         return linop, rhs.flat

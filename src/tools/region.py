@@ -1,4 +1,5 @@
 from typing import Iterable, Union
+import numpy as np
 
 class Region(tuple):
     def __new__(cls, slices: Iterable[slice]):
@@ -70,7 +71,7 @@ def interior(
     region: list[slice] = []
 
     for ax, (dim, off) in enumerate(zip(shape, offsets)):
-        if isinstance(off, int):
+        if isinstance(off, (int, np.integer)):
             left = right = abs(off)
         else:
             left, right = off

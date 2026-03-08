@@ -27,7 +27,7 @@ class FDDomain(Domain):
     def _add_boundary(self, bid: BoundaryId, ax: int, dir: int) -> FDBoundary:
         include_corners = ax == 0
         region = boundary_region(self._grid.shape, ax, dir, include_corners)
-        b = FDBoundary(bid, region, ax, -dir)
+        b = FDBoundary(bid, region, ax, -dir, self.grid)
         self._boundaries[bid] = b
         return b
 

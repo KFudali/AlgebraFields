@@ -8,7 +8,7 @@ from stencils.fd_stencil import FDStencil
 from discr.fd import FDDiscretization, FDDomain
 from discr.core.domain import BoundaryId
 
-N = 200
+N = 0
 h = 0.01
 grid = StructuredGridND((N, N), (h,h))
 domain = FDDomain(grid)

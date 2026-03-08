@@ -22,6 +22,6 @@ class FDDiscreteDirichlet(FDDiscreteBC):
         field = np.zeros(op.input_shape)
         field[self.boundary.region] = self.value
         dirichlet_contrib = np.zeros(op.output_shape)
-        stencil.apply_to_region(field, dirichlet_contrib, self.boundary.region)
+        stencil.apply_to_region(field, dirichlet_contrib, self.boundary.grid.interior)
         stencil.contribs[self.boundary.axis] = {0: 1}
         rhs += dirichlet_contrib

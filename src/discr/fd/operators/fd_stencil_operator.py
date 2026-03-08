@@ -21,7 +21,7 @@ class FDStencilOperator(algebra.Operator):
 
         self._boundary_stencils: dict[BoundaryId, Stencil] = {}
         for bid in domain.boundaries:
-            self._boundary_stencils[bid] = stencil
+            self._boundary_stencils[bid] = stencil.copy()
 
         self._factor: ScalarExpression = ScalarExpression(lambda: 1.0)
 
@@ -55,10 +55,11 @@ class FDStencilOperator(algebra.Operator):
         )
 
     def _apply(self, field: np.ndarray, out: np.ndarray):
-        interior = region.interior(
-            field.shape,
-            self._interior_stencil.ax_ranges(),
-        )
+        # interior = region.interior(
+        #     field.shape,
+        #     self._interior_stencil.ax_ranges(),
+        # )
+        interior = self.domain.grid.interior
 
         self._interior_stencil.apply_to_region(field, out, interior)
 
