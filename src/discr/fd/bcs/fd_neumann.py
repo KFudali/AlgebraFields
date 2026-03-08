@@ -14,24 +14,13 @@ class FDDiscreteNeumann(FDDiscreteBC):
     def value(self) -> float:
         return self._value
 
-    def apply(
-        self, op: FDStencilOperator, rhs: np.ndarray
-    ) -> tuple[FDStencilOperator, algebra.expression.CallableExpression]:
-        op = copy.deepcopy(op)
+    def apply(self, op: FDStencilOperator, rhs: np.ndarray):
         stencil = op.boundary_stencils[self.boundary.id]
         contribs = stencil.contribs[self.boundary.axis]
-        neumann_contrib = np.zeros(shape=op.output_shape)
         h = op.domain.grid.ax_spacing(self.boundary.axis)
         for offset, value in contribs.copy().items():
             if offset * self.boundary.inward_dir < 0:
                 contrib = value
                 contribs[-offset] = contribs.get(-offset, 0.0) + contrib
                 contribs.pop(offset)
-                neumann_contrib.flat[self.boundary.region] = \
-                    -contrib * 2 * h * self.value
-        def return_lifting() -> np.ndarray:
-            return neumann_contrib
-        contrib = algebra.expression.CallableExpression(
-            neumann_contrib.shape, return_lifting
-        )
-        return op, contrib
+                rhs.flat[self.boundary.region] = -contrib * 2 * h * self.value

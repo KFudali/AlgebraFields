@@ -23,6 +23,9 @@ class ComponentWiseOperator(OperatorWrapper):
     def components(self) -> int:
         return self._components
 
+    def _new(self, operator: Operator):
+        return ComponentWiseOperator(operator, self.components)
+
     def _apply(self, field: np.ndarray, out: np.ndarray):
-        for comp in self.input_shape[0]:
+        for comp in range(self.input_shape[0]):
             self._op.apply(field[comp, :], out[comp, :])

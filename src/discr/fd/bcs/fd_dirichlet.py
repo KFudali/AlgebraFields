@@ -13,12 +13,8 @@ class FDDiscreteDirichlet(FDDiscreteBC):
     def value(self) -> float:
         return self._value
 
-    def apply(
-        self, op: FDStencilOperator
-    ) -> tuple[FDStencilOperator, algebra.expression.CallableExpression]:
-        op = copy.deepcopy(op)
+    def apply(self, op: FDStencilOperator, rhs: np.ndarray):
         stencil = op.boundary_stencils[self.boundary.id]
-
         for ax in stencil.contribs.keys():
             if ax != self.boundary.axis:
                 stencil.contribs[ax] = {0: 0}
@@ -27,9 +23,5 @@ class FDDiscreteDirichlet(FDDiscreteBC):
         field[self.boundary.region] = self.value
         dirichlet_contrib = np.zeros(op.output_shape)
         stencil.apply_to_region(field, dirichlet_contrib, self.boundary.region)
-
         stencil.contribs[self.boundary.axis] = {0: 1}
-        def return_lifting() -> np.ndarray:
-            return dirichlet_contrib
-        contrib = algebra.expression.CallableExpression(op.output_shape, return_lifting)
-        return op, contrib
+        rhs += dirichlet_contrib

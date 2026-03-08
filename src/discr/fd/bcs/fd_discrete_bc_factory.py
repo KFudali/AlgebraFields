@@ -1,15 +1,19 @@
 from discr.core import DiscreteBCFactory
-from .fd_discrete_bc import FDBoundary
+from discr.core.domain import BoundaryId
+from ..domain import FDDomain
 
 from .fd_neumann import FDDiscreteNeumann
 from .fd_dirichlet import FDDiscreteDirichlet
 
-class FDDiscreteBCFactory(DiscreteBCFactory[FDBoundary]):
-    def __init__(self):
+class FDDiscreteBCFactory(DiscreteBCFactory):
+    def __init__(self, domain: FDDomain):
         super().__init__()
+        self._domain = domain
 
-    def dirichlet(self, boundary: FDBoundary, value: float) -> FDDiscreteDirichlet:
+    def dirichlet(self, bid: BoundaryId, value: float) -> FDDiscreteDirichlet:
+        boundary = self._domain.boundary(bid)
         return FDDiscreteDirichlet(boundary, value)
 
-    def neumann(self, boundary: FDBoundary, value: float) -> FDDiscreteNeumann:
+    def neumann(self, bid: BoundaryId, value: float) -> FDDiscreteNeumann:
+        boundary = self._domain.boundary(bid)
         return FDDiscreteNeumann(boundary, value)

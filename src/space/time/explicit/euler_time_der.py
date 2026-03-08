@@ -18,4 +18,4 @@ class EulerTimeDer(FieldOperatorExpression):
         super().__init__(field.value(), op)
 
     def _dt(self) -> algebra.ScalarExpression:
-       return algebra.ScalarExpression(self._time.last_dt)
+       return algebra.ScalarExpression(self._time.dt)

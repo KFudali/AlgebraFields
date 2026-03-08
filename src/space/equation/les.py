@@ -10,10 +10,10 @@ from discr.core import DiscreteBC
 class LES(Equation):
     def __init__(
         self, 
-        Ax: algebra.operator.CombinedOperator, 
+        linop: algebra.operator.CombinedOperator, 
         rhs: algebra.Expression
     ):
-        self._Ax = Ax
+        self._linop = linop
         self._rhs = rhs
         self._bcs = set()
 
@@ -28,21 +28,21 @@ class LES(Equation):
         Ax, rhs = self._assemble()
         def solve() -> np.ndarray:
             x, info = cg(Ax, rhs, maxiter=1000, rtol = 1e-6)
-            return x.reshape()
-        return algebra.expression.CallableExpression(self._Ax.output_shape, solve)
+            return x.reshape(self._linop.output_shape)
+        return algebra.expression.CallableExpression(self._linop.output_shape, solve)
     
     def _assemble(self) -> tuple[LinearOperator, np.ndarray]:
         rhs = self._rhs.eval()
-        Ax = self._Ax.copy()
-        rhs += Ax.take_b().eval()
+        linop = self._linop.copy()
+        rhs -= linop.take_b().eval()
         for bc in self.bcs:
-            bc.apply(Ax, rhs)
-        matvec = self._assemble_matvec(Ax)
+            bc.apply(linop.Ax.core, rhs)
+        matvec = self._assemble_matvec(linop.Ax)
         N = rhs.flatten().shape
-        linop = LinearOperator(shape=(N, N), matvec=matvec, dtype=float)
-        return linop, rhs
+        linop = LinearOperator(shape=(*N, *N), matvec=matvec, dtype=float)
+        return linop, rhs.flat
 
-    def _assemble_matvec(Ax: algebra.Operator) -> Callable:
+    def _assemble_matvec(self, Ax: algebra.Operator) -> Callable:
         def matvec(x: np.ndarray) -> np.ndarray:
             out = np.zeros_like(x)
             Ax.apply(x.reshape(Ax.input_shape), out.reshape(Ax.output_shape))

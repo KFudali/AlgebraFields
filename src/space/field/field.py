@@ -32,7 +32,7 @@ class FieldView(AbstractField):
             ShiftProxyValueBuffer(self._value_buffer, steps), 
         )
 
-    def advance(self):
+    def advance(self, dt: float):
         self._value_buffer.advance()
 
     def get_current(self):

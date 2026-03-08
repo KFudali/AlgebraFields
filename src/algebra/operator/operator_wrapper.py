@@ -21,22 +21,25 @@ class OperatorWrapper(Operator):
         return self._op
 
     def copy(self) -> "OperatorWrapper":
-        return OperatorWrapper(self._op.copy(), self.input_shape, self.output_shape)
+        return self._new(self._op.copy())
+
+    def _new(self, operator: Operator) -> Self:
+        return OperatorWrapper(operator, self.input_shape, self.output_shape)
 
     def _apply(self, field: np.ndarray, out: np.ndarray):
         return self._op._apply(field, out)
 
     def _wrap_magic(self, method, other):
-        return Operator(method(other), self.input_shape, self.output_shape)
+        return self._new(method(other))
 
     def __neg__(self) -> Self:
         return OperatorWrapper(-self.core, self.input_shape, self.output_shape)
 
     def __add__(self, other) -> Self:
-        return self._wrap_magic(self.__add__, other)
+        return self._wrap_magic(self._op.__add__, other)
 
     def __mul__(self, other) -> Self:
-        return self._wrap_magic(self.__mul__, other)
+        return self._wrap_magic(self._op.__mul__, other)
 
     def __truediv__(self, other) -> Self:
-        return self._wrap_magic(self.__truediv__, other)
+        return self._wrap_magic(self._op.__truediv__, other)
