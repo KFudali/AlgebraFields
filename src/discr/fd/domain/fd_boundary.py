@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from discretization.core.domain import Boundary
+from discr.core.domain import Boundary
 from tools.region import Region
 
 @dataclass(frozen=True)

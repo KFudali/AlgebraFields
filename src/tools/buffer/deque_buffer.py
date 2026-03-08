@@ -13,7 +13,7 @@ class DequeValueBuffer(ValueBuffer):
         self._saved_steps = saved_steps
 
         self._buffer = deque(
-            (np.zeros(shape) for _ in range(saved_steps)), maxlen=saved_steps
+            (np.zeros(shape=shape) for _ in range(saved_steps)), maxlen=saved_steps
         )
 
     @property

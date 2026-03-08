@@ -1,6 +1,6 @@
 from typing import Optional
 
-from discretization.core.domain import BoundaryId, Domain
+from discr.core.domain import BoundaryId, Domain
 from tools.geometry import StructuredGridND
 from .fd_boundary import FDBoundary
 from tools.region import boundary_region
@@ -16,8 +16,8 @@ class FDDomain(Domain):
         for ax in range(self._grid.ndim):
             left_id = self._alloc_boundary_id()
             right_id = self._alloc_boundary_id()
-            self._add_boundary(left_id, ax, inward_dir=-1)
-            self._add_boundary(right_id, ax, inward_dir=1)
+            self._add_boundary(left_id, ax, dir=-1)
+            self._add_boundary(right_id, ax, dir=1)
 
     def _alloc_boundary_id(self) -> BoundaryId:
         bid = BoundaryId(self._next_boundary_id)

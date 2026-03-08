@@ -15,7 +15,7 @@ class FDDiscreteNeumann(FDDiscreteBC):
         return self._value
 
     def apply(
-        self, op: FDStencilOperator
+        self, op: FDStencilOperator, rhs: np.ndarray
     ) -> tuple[FDStencilOperator, algebra.expression.CallableExpression]:
         op = copy.deepcopy(op)
         stencil = op.boundary_stencils[self.boundary.id]

@@ -1,4 +1,4 @@
-from discretization.core import DiscreteBCFactory
+from discr.core import DiscreteBCFactory
 from .fd_discrete_bc import FDBoundary
 
 from .fd_neumann import FDDiscreteNeumann

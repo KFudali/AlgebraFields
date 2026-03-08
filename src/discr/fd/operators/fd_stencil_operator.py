@@ -9,8 +9,8 @@ from algebra.stencil import Stencil
 from algebra.expression import ScalarExpression
 
 import tools.region as region
-from discretization.fd.domain import FDDomain
-from discretization.core.domain import BoundaryId
+from discr.fd.domain import FDDomain
+from discr.core.domain import BoundaryId
 
 class FDStencilOperator(algebra.Operator):
     def __init__(self, domain: FDDomain, stencil: Stencil):
@@ -48,7 +48,13 @@ class FDStencilOperator(algebra.Operator):
         op._factor = 1.0
         return op
 
-    def apply(self, field: np.ndarray, out: np.ndarray):
+
+    def copy(self) -> FDStencilOperator:
+        return self._new_copy(
+            self.interior_stencil, self.boundary_stencils, self._factor
+        )
+
+    def _apply(self, field: np.ndarray, out: np.ndarray):
         interior = region.interior(
             field.shape,
             self._interior_stencil.ax_ranges(),

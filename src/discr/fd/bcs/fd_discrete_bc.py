@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
 
-from discretization.core import DiscreteBC
-from discretization.fd.domain import FDBoundary
-from discretization.fd.operators import FDStencilOperator
+from discr.core import DiscreteBC
+from discr.fd.domain import FDBoundary
+from discr.fd.operators import FDStencilOperator
 
 
 class FDDiscreteBC(DiscreteBC[FDBoundary], ABC):

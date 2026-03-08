@@ -1,3 +1,4 @@
+import numpy as np
 from tools.buffer import ValueBuffer, ShiftProxyValueBuffer
 
 import algebra
@@ -11,7 +12,7 @@ class FieldView(AbstractField):
         value_buffer: ValueBuffer
     ):
         super().__init__(space, components)
-        if self.shape != self._value_buffer:
+        if self.shape != value_buffer.shape:
             raise algebra.exceptions.ShapeMismatchException(
                 "Passed value buffer does not match field shape"
             )
@@ -24,11 +25,22 @@ class FieldView(AbstractField):
         self._value_buffer.set_saved_steps(steps)
 
     def past(self, steps: int = 1) -> "FieldView":
-        self.save_past(steps)
-        return FieldView(ShiftProxyValueBuffer(self._value_buffer, steps))
+        if steps > self._value_buffer.saved_steps: self.save_past(steps)
+        return FieldView(
+            self.space, 
+            self.components,
+            ShiftProxyValueBuffer(self._value_buffer, steps), 
+        )
 
     def advance(self):
         self._value_buffer.advance()
+
+    def get_current(self):
+        return self._value_buffer.get(0)
+    
+    def set_current(self, value: np.ndarray):
+        return self._value_buffer.set(value)
+
 
 class Field(FieldView):
     def __init__(
@@ -38,5 +50,5 @@ class Field(FieldView):
     ):
         super().__init__(space, components, value_buffer)
 
-    def set_value(self, expr: algebra.Expression) -> FieldUpdate:
+    def update(self, expr: algebra.Expression) -> FieldUpdate:
         return FieldUpdate(self, expr)

@@ -12,5 +12,8 @@ class FieldUpdate(SimpleExpression, FieldShaped):
         self._field = field
         self._expr = expr
 
+    def copy(self) -> "FieldUpdate":
+        return FieldUpdate(self._field, self._expr.copy())
+
     def eval(self):
         self._field.set_current(self._expr.eval())

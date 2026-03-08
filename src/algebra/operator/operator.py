@@ -1,10 +1,10 @@
 from __future__ import annotations
-from abc import ABC, abstractmethod
-from typing import Self
+from abc import abstractmethod, ABC
+from typing import Self, Generic, TypeVar
 import numpy as np
 
 from algebra.exceptions import ShapeMismatchException
-from algebra.expression import Expression, ScalarExpression
+from algebra.expression import ScalarExpression
 
 
 class Operator(ABC):
@@ -15,6 +15,11 @@ class Operator(ABC):
     ):
         self._input_shape = input_shape
         self._output_shape = output_shape
+    
+
+    @property
+    def core(self) -> Operator:
+        return self
 
     @property
     def input_shape(self) -> tuple[int, ...]:
@@ -40,6 +45,9 @@ class Operator(ABC):
         self._apply(field, out)
 
     @abstractmethod
+    def copy(self) -> Self: pass
+    
+    @abstractmethod
     def _apply(self, field: np.ndarray, out: np.ndarray):
         pass
 
@@ -59,8 +67,7 @@ class Operator(ABC):
     def __truediv__(self, other: float | ScalarExpression) -> Self:
         pass
 
-    def __sub__(self, other: Operator) -> Self:
+    def __sub__(self, other: Operator):
         return self + (-other)
-
-    def __rmul__(self, other: float | ScalarExpression) -> Self:
-        return self * other
+    
+TOperator = TypeVar("TOperator", bound=Operator)

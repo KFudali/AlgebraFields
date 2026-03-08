@@ -1,7 +1,5 @@
-from dataclasses import dataclass
 from typing import Iterable, Union
 
-@dataclass(frozen=True)
 class Region(tuple):
     def __new__(cls, slices: Iterable[slice]):
         slices  = tuple(slices)

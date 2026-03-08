@@ -1,6 +1,5 @@
-from .simple_expr import Expression
+from ..expression import Expression
 from ..scalar_expression import ScalarExpression
-
 
 class ExpressionOperatorsMixin:
     def _make_unary(self, op: Expression) -> Expression:

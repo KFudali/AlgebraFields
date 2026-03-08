@@ -1,7 +1,7 @@
 from algebra.exceptions import ShapeMismatchException
-from ..expression import Expression
+from .simple_expr import SimpleExpression, Expression
 
-class ExprBinaryOp(Expression):
+class ExprBinaryOp(SimpleExpression):
     def __init__(
         self, 
         left: Expression, right: Expression, 

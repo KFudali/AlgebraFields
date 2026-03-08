@@ -1,8 +1,8 @@
 from ..field import Field
 from .field_operator_expression import FieldOperatorExpression
 
-from space.time import TimeSeries, explicit
+from space.time import explicit
 
 
-def euler(field: Field, time: TimeSeries) -> FieldOperatorExpression:
-    return explicit.EulerTimeDer(field, time)
+def euler(field: Field) -> FieldOperatorExpression:
+    return explicit.EulerTimeDer(field)

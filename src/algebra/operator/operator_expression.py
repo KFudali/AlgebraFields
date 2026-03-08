@@ -1,13 +1,12 @@
 import numpy as np
-from typing import Self
+from typing import Self, Generic
 
-
-from .operator import Operator
+from .operator import Operator, TOperator
 from algebra.expression import Expression
 from algebra.exceptions import ShapeMismatchException
 
-class OperatorExpression(Expression):
-    def __init__(self, input: Expression, operator: Operator):
+class OperatorExpression(Expression, Generic[TOperator]):
+    def __init__(self, input: Expression, operator: TOperator):
         super().__init__(operator.output_shape)
         self._input = input
         self._operator = operator
@@ -20,13 +19,24 @@ Operator input_shape: {operator.input_shape}
 """
             )
 
+    @property
+    def input(self) -> Expression:
+        return self._input
+
+    @property
+    def operator(self) -> TOperator:
+        return self._operator
+
     def eval(self) -> np.ndarray:
         out = np.zeros(shape=self.output_shape)
         input = self._input.eval()
         self._operator.apply(input, out)
         return out
 
-    def _new(self, input: Expression, operator: Operator) -> Self:
+    def copy(self):
+        return OperatorExpression(self.input.copy(), self.operator.copy())
+
+    def _new(self, input: Expression, operator: TOperator) -> Self:
         return OperatorExpression(input, operator)
 
     def __neg__(self):

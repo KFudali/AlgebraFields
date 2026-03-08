@@ -1,5 +1,5 @@
 from __future__ import annotations
-
+import copy
 from typing import Callable, Self
 
 
@@ -9,6 +9,9 @@ class ScalarExpression:
 
     def eval(self) -> float:
         return self._expr()
+
+    def copy(self) -> ScalarExpression:
+        return ScalarExpression(copy.deepcopy(self._expr))
 
     @staticmethod
     def ensure(value: float | "ScalarExpression") -> "ScalarExpression":
@@ -42,3 +45,7 @@ class ScalarExpression:
     def __truediv__(self, other: ScalarExpression | float) -> Self:
         other = ScalarExpression.ensure(other)
         return ScalarExpression(lambda: self.eval() / other.eval())
+    
+    def __rtruediv__(self, other: float | ScalarExpression) -> Self:
+        other = ScalarExpression.ensure(other)
+        return ScalarExpression(lambda: other.eval() / self.eval())

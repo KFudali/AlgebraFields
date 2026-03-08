@@ -1,8 +1,14 @@
-from discretization.core import Discretization, DiscreteBCFactory, DiscreteOperatorsFactory
+from discr.core import Discretization, DiscreteBCFactory, DiscreteOperatorsFactory
+from .time import TimeSeries
 
 class Space():
     def __init__(self, discretization: Discretization):
         self._discretization = discretization
+        self._time = TimeSeries()
+
+    @property
+    def time(self) -> TimeSeries:
+        return self._time
 
     @property
     def discretization(self) -> Discretization:
@@ -19,3 +25,4 @@ class Space():
     @property
     def operators(self) -> DiscreteOperatorsFactory:
         return self._discretization.operators
+    

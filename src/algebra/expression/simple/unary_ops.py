@@ -1,8 +1,8 @@
 import numpy as np
-from ..expression import Expression
+from .simple_expr import SimpleExpression, Expression
 from ..scalar_expression import ScalarExpression
 
-class ExprUnaryOp(Expression):
+class ExprUnaryOp(SimpleExpression):
     def __init__(self, operand: Expression, output_shape: tuple[int, ...]):
         self._operand = operand
         super().__init__(output_shape)

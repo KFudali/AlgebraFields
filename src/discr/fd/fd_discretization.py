@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Optional
 import numpy as np
 
-from discretization.core import Discretization
+from discr.core import Discretization
 from .operators import FDDiscreteOperatorsFactory
 from .bcs import FDDiscreteBCFactory
 from .domain import FDDomain
@@ -12,7 +12,7 @@ class FDDiscretization(Discretization[FDDomain]):
     def __init__(self, domain: FDDomain):
         self._domain = domain
         self._operators= FDDiscreteOperatorsFactory(domain)
-        self._bcs = FDDiscreteBCFactory(domain)
+        self._bcs = FDDiscreteBCFactory()
 
     @property
     def shape(self) -> tuple[int, ...]:

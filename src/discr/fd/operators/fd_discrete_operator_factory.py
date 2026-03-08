@@ -1,8 +1,8 @@
 from tools.geometry import StructuredGridND
 import algebra
 
-from discretization.core import DiscreteOperatorsFactory
-from discretization.fd.domain import FDDomain
+from discr.core import DiscreteOperatorsFactory
+from discr.fd.domain import FDDomain
 
 from .fd_stencil_operator import FDStencilOperator
 
@@ -18,7 +18,7 @@ class FDDiscreteOperatorsFactory(DiscreteOperatorsFactory):
         contribs = {ax: {} for ax in range(self.grid.ndim)}
         contribs[0] = {0: 1.0}
         stencil = algebra.stencil.Stencil(contribs)
-        return FDStencilOperator(stencil)
+        return FDStencilOperator(self._domain, stencil)
 
     def laplace(self) -> FDStencilOperator:
         contribs = {}
@@ -30,4 +30,4 @@ class FDDiscreteOperatorsFactory(DiscreteOperatorsFactory):
             second_central = {-1: left, 0: central, 1: right}
             contribs[ax] = second_central
         stencil = algebra.stencil.Stencil(contribs)
-        return FDStencilOperator(stencil)
+        return FDStencilOperator(self._domain, stencil)

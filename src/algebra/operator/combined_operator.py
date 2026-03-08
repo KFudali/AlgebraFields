@@ -1,8 +1,8 @@
-from typing import Self
+from typing import Self, Optional
 import numpy as np
 
 from .operator import Operator
-from ..expression import Expression, ScalarExpression
+from ..expression import Expression, ScalarExpression, ZeroExpression
 from algebra.exceptions import ShapeMismatchException
 
 
@@ -17,17 +17,38 @@ class CombinedOperator(Operator):
         self._Ax = Ax
         self._b = b
 
+    @property
+    def core(self) -> "CombinedOperator":
+        return self
+
+    @property
+    def Ax(self) -> Operator:
+        return self._Ax
+
+    @property
+    def b(self) -> Expression:
+        return self._b
+
     def _apply(self, field: np.ndarray, out: np.ndarray):
-        self._Ax.apply(field, out)
-        out += self._b.eval()
+        self.Ax.apply(field, out)
+        out += self.b.eval()
+        return out
+
+    def copy(self):
+        return CombinedOperator(self._Ax.copy(), self._b.copy())
+
+    def take_b(self) -> Expression:
+        b = self._b
+        self._b = ZeroExpression(self.output_shape)
+        return b
 
     def __neg__(self) -> Self:
         return CombinedOperator(-self._Ax, - self._b)
 
-    def __add__(self, other: float | Expression | ScalarExpression) -> Self:
+    def __add__(self, other: Operator | float | Expression | ScalarExpression) -> Self:
         if isinstance(other, Operator):
             return CombinedOperator(self._Ax + other, self._b)
-        if isinstance(other, (float, ScalarExpression)):
+        if isinstance(other, (float, Expression, ScalarExpression)):
             return CombinedOperator(self._Ax, self._b + other)
         return NotImplemented
 

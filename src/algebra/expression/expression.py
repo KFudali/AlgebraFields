@@ -14,6 +14,9 @@ class Expression(ABC):
         return self._output_shape
 
     @abstractmethod
+    def copy(self) -> Self: pass
+
+    @abstractmethod
     def eval(self) -> np.ndarray:
         pass
 

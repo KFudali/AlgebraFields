@@ -1,5 +1,5 @@
 import numpy as np
-from ...tools.region import Region
+from tools.region import Region
 from .operators_mixin import StencilOperatorsMixin
 
 class Stencil(StencilOperatorsMixin):
