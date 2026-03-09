@@ -15,7 +15,6 @@ class Operator(ABC):
     ):
         self._input_shape = input_shape
         self._output_shape = output_shape
-    
 
     @property
     def core(self) -> Operator:

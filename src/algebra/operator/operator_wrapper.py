@@ -29,17 +29,40 @@ class OperatorWrapper(Operator):
     def _apply(self, field: np.ndarray, out: np.ndarray):
         return self._op._apply(field, out)
 
-    def _wrap_magic(self, method, other):
-        return self._new(method(other))
-
     def __neg__(self) -> Self:
         return OperatorWrapper(-self.core, self.input_shape, self.output_shape)
 
     def __add__(self, other) -> Self:
-        return self._wrap_magic(self._op.__add__, other)
+        result = self._op.__add__(other)
+        if result is not NotImplemented: 
+            return self._new(result)
+        
+        result = other.__radd__(self._op)
+        if result is NotImplemented: return NotImplemented
+        return result
+
+    def __radd__(self, other) -> Self:
+        result = self._op.__add__(other)
+        if result is NotImplemented: return NotImplemented
+        return self._new(result)
+
+    def __sub__(self, other):
+        return self + (-other)
+
+    def __rsub__(self, other):
+        return (-self) + other
 
     def __mul__(self, other) -> Self:
-        return self._wrap_magic(self._op.__mul__, other)
+        result = self._op.__mul__(other)
+        if result is NotImplemented: return NotImplemented
+        return self._new(result)
+
+    def __rmul__(self, other) -> Self:
+        result = self._op.__rmlu__(other)
+        if result is NotImplemented: return NotImplemented
+        return self._new(result)
 
     def __truediv__(self, other) -> Self:
-        return self._wrap_magic(self._op.__truediv__, other)
+        result = self._op.__truediv__(other)
+        if result is NotImplemented: return NotImplemented
+        return self._new(result)

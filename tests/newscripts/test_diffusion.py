@@ -1,3 +1,5 @@
+import numpy as np
+
 from space.field.operators import Dt, Dx
 from discr import fd
 
@@ -16,10 +18,12 @@ eq_space = space.FieldSpace(discretization)
 F = eq_space.scalar_field(init_value = 0.0)
 
 diff = 1.0
-lhs = Dt.euler(F) - diff * Dx.laplace(F)
+dx = Dx.laplace(F).operator * diff
+dt  = Dt.euler(F).operator
+lhs = dt - dx
 rhs = eq_space.scalar_field(init_value = 0.0).value()
 
-les = space.equation.LES(lhs.operator, rhs)
+les = space.equation.LES(lhs, rhs)
 les.add_bcs((
     eq_space.bcs.dirichlet(top, 10.0),
     eq_space.bcs.dirichlet(bot, 0.0),
@@ -29,3 +33,22 @@ les.add_bcs((
 
 for time in eq_space.time.loop(0.0, 10.0, dt = 0.01):
     F.update(les.solve()).eval()
+
+import matplotlib.pyplot as plt
+u = F.past().get_current()
+nx, ny = grid.shape
+dx, dy = grid.spacing
+x = np.linspace(0, (nx-1)*dx, nx)
+y = np.linspace(0, (ny-1)*dy, ny)
+X, Y = np.meshgrid(x, y)
+U = u.reshape(X.shape)
+fig = plt.figure(figsize=(14,6))
+ax1 = fig.add_subplot(1, 1, 1, projection='3d')
+surf1 = ax1.plot_surface(X, Y, U, cmap='viridis', edgecolor='k', linewidth=0.5)
+ax1.set_title("Conjugate Gradient")
+ax1.set_xlabel("x")
+ax1.set_ylabel("y")
+ax1.set_zlabel("u")
+fig.colorbar(surf1, ax=ax1, shrink=0.6, aspect=10, label='u')
+plt.tight_layout()
+plt.show()

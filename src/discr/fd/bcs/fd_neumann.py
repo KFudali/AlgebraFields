@@ -15,6 +15,7 @@ class FDDiscreteNeumann(FDDiscreteBC):
         return self._value
 
     def apply(self, op: FDStencilOperator, rhs: np.ndarray):
+        op.resolve_factor()
         stencil = op.boundary_stencils[self.boundary.id]
         contribs = stencil.contribs[self.boundary.axis]
         h = op.domain.grid.ax_spacing(self.boundary.axis)

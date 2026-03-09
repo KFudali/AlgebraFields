@@ -31,6 +31,7 @@ out = les.solve().eval()
 print("finished")
 
 import matplotlib.pyplot as plt
+
 u = out
 nx, ny = grid.shape
 dx, dy = grid.spacing
@@ -49,6 +50,4 @@ fig.colorbar(surf1, ax=ax1, shrink=0.6, aspect=10, label='u')
 plt.tight_layout()
 plt.show()
 
-
-# Fix interior region in FDStencilOperator
 # Fix hacked rhs[0] in LES

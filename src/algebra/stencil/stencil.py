@@ -4,6 +4,7 @@ from .operators_mixin import StencilOperatorsMixin
 
 class Stencil(StencilOperatorsMixin):
     def __init__(self, contribs: dict[int, dict[int, float]]):
+        super().__init__()
         self.contribs = contribs
 
     def copy(self):

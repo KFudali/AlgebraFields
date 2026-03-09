@@ -46,13 +46,34 @@ class CombinedOperator(Operator):
         return CombinedOperator(-self._Ax, - self._b)
 
     def __add__(self, other: Operator | float | Expression | ScalarExpression) -> Self:
+        if isinstance(other, CombinedOperator):
+            return CombinedOperator(self._Ax + other._Ax, self._b + other._b)
         if isinstance(other, Operator):
             return CombinedOperator(self._Ax + other, self._b)
         if isinstance(other, (float, Expression, ScalarExpression)):
             return CombinedOperator(self._Ax, self._b + other)
         return NotImplemented
 
+    def __sub__(self, other: Operator | float | Expression | ScalarExpression):
+        return self + (-other)
+
+    def __rsub__(self, other: Operator | float | Expression | ScalarExpression):
+        return (-self) + other
+
+    def __radd__(self, other: Operator | float | Expression | ScalarExpression) -> Self:
+        if isinstance(other, CombinedOperator):
+            return CombinedOperator(self._Ax + other._Ax, self._b + other._b)
+        if isinstance(other, Operator):
+            return CombinedOperator(self._Ax + other, self._b)
+        if isinstance(other, (float, Expression, ScalarExpression)):
+            return CombinedOperator(self._Ax, self._b + other)
+
     def __mul__(self, other: float | ScalarExpression) -> Self:
+        if isinstance(other, (float, ScalarExpression)):
+            return CombinedOperator(self._Ax * other, self._b * other)
+        return NotImplemented
+
+    def __rmul__(self, other: float | ScalarExpression) -> Self:
         if isinstance(other, (float, ScalarExpression)):
             return CombinedOperator(self._Ax * other, self._b * other)
         return NotImplemented

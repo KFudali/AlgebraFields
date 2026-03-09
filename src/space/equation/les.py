@@ -11,10 +11,10 @@ from discr.core import DiscreteBC
 class LES(Equation):
     def __init__(
         self, 
-        linop: algebra.operator.CombinedOperator,
+        linop: algebra.Operator,
         rhs: algebra.Expression
     ):
-        # is_combined = isinstance(linop, CombinedOperator)
+
         # is_combined_wrapper = isinstance(linop.core, CombinedOperator)
         # if not is_combined:
         #     if is_combined_wrapper: 
@@ -45,9 +45,12 @@ class LES(Equation):
     def _assemble(self) -> tuple[LinearOperator, np.ndarray]:
         rhs = self._rhs.eval()
         linop = self._linop.copy()
-        rhs -= linop.core.take_b().eval()
+        Ax = linop.core
+        if isinstance(Ax, CombinedOperator):
+            rhs -= Ax.take_b().eval()
+            Ax = Ax.Ax.core
         for bc in self.bcs:
-            bc.apply(linop.core.Ax, rhs[0])
+            bc.apply(Ax, rhs[0])
         matvec = self._assemble_matvec(linop)
         N = rhs.flatten().shape
         linop = LinearOperator(shape=(*N, *N), matvec=matvec, dtype=float)

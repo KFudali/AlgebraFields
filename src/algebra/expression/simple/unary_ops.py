@@ -10,22 +10,18 @@ class ExprUnaryOp(SimpleExpression):
 class ScaleExpr(ExprUnaryOp):
     def __init__(self, operand: Expression, scale: float):
         super().__init__(operand, operand.output_shape)
-        self._scale = scale
+        self._scale = ScalarExpression.ensure(scale)
 
     def eval(self) -> np.ndarray:
-        if isinstance(self._scale, ScalarExpression):
-            return self._scale.eval() + self._operand.eval()
-        return self._scale + self._operand.eval()
+        return self._operand.eval() / self._scale.eval()
 
 class ScalarShiftExpr(ExprUnaryOp):
     def __init__(self, operand: Expression, scalar: float | ScalarExpression):
         super().__init__(operand, operand.output_shape)
-        self._scalar = scalar
+        self._scalar = ScalarExpression.ensure(scalar)
 
     def eval(self) -> np.ndarray:
-        if isinstance(self._scalar, ScalarExpression):
-            return self._scalar.eval() + self._operand.eval()
-        return self._scalar + self._operand.eval()
+        return  self._operand.eval() + self._scalar
     
 class NegExpr(ExprUnaryOp):
     def __init__(self, operand: Expression):

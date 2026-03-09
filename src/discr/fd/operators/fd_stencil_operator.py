@@ -41,13 +41,12 @@ class FDStencilOperator(algebra.Operator):
     def stencils(self) -> list[Stencil]:
         return list(self._boundary_stencils.values()) + [self._interior_stencil]
 
-    def resolved(self) -> FDStencilOperator:
-        op = FDStencilOperator(self.domain, self.interior_stencil)
-        op._boundary_stencils = copy.deepcopy(self._boundary_stencils)
-        op = op * self._factor.eval()
-        op._factor = 1.0
-        return op
-
+    def resolve_factor(self):
+        factor = self._factor.eval() 
+        for stencil in self._boundary_stencils.values():
+            stencil *= factor
+        self._interior_stencil *= factor
+        self._factor = ScalarExpression(lambda: 1.0)
 
     def copy(self) -> FDStencilOperator:
         return self._new_copy(
@@ -55,11 +54,11 @@ class FDStencilOperator(algebra.Operator):
         )
 
     def _apply(self, field: np.ndarray, out: np.ndarray):
-        # interior = region.interior(
-        #     field.shape,
-        #     self._interior_stencil.ax_ranges(),
-        # )
-        interior = self.domain.grid.interior
+        interior = region.interior(
+            field.shape,
+            tuple(self._interior_stencil.ax_ranges().values()),
+        )
+        # interior = self.domain.grid.interior
 
         self._interior_stencil.apply_to_region(field, out, interior)
 
@@ -105,11 +104,7 @@ class FDStencilOperator(algebra.Operator):
         )
 
     def __mul__(self, other: float | ScalarExpression) -> Self:
-        if isinstance(other, float):
-            self._interior_stencil += other
-            for bid, in self._boundary_stencils.keys():
-                self._boundary_stencils[bid] *= other
-        if isinstance(other, ScalarExpression):
+        if isinstance(other, (float,ScalarExpression)):
             return self._new_copy(
                 self._interior_stencil,
                 self._boundary_stencils,

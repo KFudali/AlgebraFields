@@ -14,6 +14,7 @@ class FDDiscreteDirichlet(FDDiscreteBC):
         return self._value
 
     def apply(self, op: FDStencilOperator, rhs: np.ndarray):
+        op.resolve_factor()
         stencil = op.boundary_stencils[self.boundary.id]
         for ax in stencil.contribs.keys():
             if ax != self.boundary.axis:
