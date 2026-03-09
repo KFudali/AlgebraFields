@@ -30,7 +30,7 @@ class OperatorWrapper(Operator):
         return self._op._apply(field, out)
 
     def __neg__(self) -> Self:
-        return OperatorWrapper(-self.core, self.input_shape, self.output_shape)
+        return self._new(-self._op)
 
     def __add__(self, other) -> Self:
         result = self._op.__add__(other)

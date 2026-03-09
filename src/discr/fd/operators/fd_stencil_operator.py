@@ -43,8 +43,8 @@ class FDStencilOperator(algebra.Operator):
 
     def resolve_factor(self):
         factor = self._factor.eval() 
-        for stencil in self._boundary_stencils.values():
-            stencil *= factor
+        for bid, stencil in self._boundary_stencils.items():
+            self._boundary_stencils[bid] = stencil * factor
         self._interior_stencil *= factor
         self._factor = ScalarExpression(lambda: 1.0)
 
@@ -82,7 +82,7 @@ class FDStencilOperator(algebra.Operator):
         return self._new_copy(
             interior=-self._interior_stencil,
             boundaries={bid: -st for bid, st in self._boundary_stencils.items()},
-            factor=-self._factor,
+            factor=self._factor,
         )
 
     def __add__(self, other: FDStencilOperator) -> Self:
@@ -93,6 +93,8 @@ class FDStencilOperator(algebra.Operator):
             or self.output_shape != other.output_shape
         ):
             raise ShapeMismatchException("Operator shape mismatch")
+        self.resolve_factor()
+        other.resolve_factor()
         return self._new_copy(
             self._interior_stencil + other._interior_stencil,
             {
@@ -100,7 +102,7 @@ class FDStencilOperator(algebra.Operator):
                 + other._boundary_stencils[bid]
                 for bid in self._boundary_stencils
             },
-            self._factor + other._factor
+            ScalarExpression(lambda: 1.0)
         )
 
     def __mul__(self, other: float | ScalarExpression) -> Self:

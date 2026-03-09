@@ -16,7 +16,7 @@ class FDDiscreteOperatorsFactory(DiscreteOperatorsFactory):
 
     def eye(self) -> FDStencilOperator:
         contribs = {ax: {} for ax in range(self.grid.ndim)}
-        contribs[0] = {0: 1.0}
+        contribs[1] = {0: 1.0}
         stencil = algebra.stencil.Stencil(contribs)
         return FDStencilOperator(self._domain, stencil)
 
