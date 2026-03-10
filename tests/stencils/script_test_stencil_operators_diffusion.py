@@ -3,10 +3,11 @@ import matplotlib.pyplot as plt
 import numpy as np
 import copy
 
-from tools.geometry.grid import StructuredGridND
+from tools.geometry import StructuredGridND
 from stencils.fd_stencil_operator import FDStencilOperator
 from stencils.fd_stencil import FDStencil
-from discr.fd import FDDiscretization, FDDomain
+from discr.fd import FDDiscretization
+from discr.fd.domain import FDDomain
 from discr.core.domain import BoundaryId
 
 N = 20
@@ -127,55 +128,3 @@ ax1.set_zlabel("u")
 fig.colorbar(surf1, ax=ax1, shrink=0.6, aspect=10, label='u')
 plt.tight_layout()
 plt.show()
-
-
-
-class Region():
-    boundary/interior/slice etc
-
-class FDStencilOperator(Operator):
-    def __init__(self): pass
-
-
-class FieldOperator(): 
-    def __init__(self):
-        pass
-
-    def apply(field: np.ndarray, out: np.ndarray): pass
-
-
-
-from abc import ABC, abstractmethod
-class Operator(ABC):
-    def apply(field: np.ndarray, out: np.ndarray): pass
-    
-    @abstractmethod
-    def __add__(self) -> "Operator": pass
-
-    @abstractmethod
-    def __add__(self) -> "Operator": pass
-
-class FieldOperator(Operator): fixed field sizes
-
-class FDStencilOperator(Operator):
-    def __init__(self):
-        super().__init__()
-
-
-
-class FDStencilFieldOperator(FieldOperator):
-
-
-tools
-    algebra
-        expr
-            Expression
-            Expression
-        operator
-            Operator
-            AbstractOperator
-
-
-
-space
-    field
