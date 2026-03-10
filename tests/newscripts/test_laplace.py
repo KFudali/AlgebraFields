@@ -33,6 +33,8 @@ print("finished")
 import matplotlib.pyplot as plt
 
 u = out
+u[0][domain.boundary(top).region] = 10
+u[0][domain.boundary(bot).region] = 0
 nx, ny = grid.shape
 dx, dy = grid.spacing
 x = np.linspace(0, (nx-1)*dx, nx)

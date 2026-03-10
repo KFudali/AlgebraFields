@@ -44,15 +44,13 @@ class LES(Equation):
     
     def _assemble(self) -> tuple[LinearOperator, np.ndarray]:
         rhs = self._rhs.eval()
-        bc_rhs = np.zeros_like(rhs[0])
         linop = self._linop.copy()
         Ax = linop.core
         if isinstance(Ax, CombinedOperator):
             rhs -= Ax.take_b().eval()
             Ax = Ax.Ax.core
         for bc in self.bcs:
-            bc.apply(Ax, bc_rhs)
-        rhs[0] += bc_rhs
+            bc.apply(Ax, rhs[0])
         matvec = self._assemble_matvec(linop)
         N = rhs.flatten().shape
         linop = LinearOperator(shape=(*N, *N), matvec=matvec, dtype=float)
