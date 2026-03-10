@@ -13,7 +13,7 @@ class EulerTimeDer(FieldOperatorExpression):
 
         op = self._discr.operators.eye() / self._dt()
         comp_op = algebra.operator.ComponentWiseOperator(op, field.components)
-        rhs = field.past(1).value() / self._dt()
+        rhs = -field.past(1).value() / self._dt()
         op = algebra.operator.CombinedOperator(comp_op, rhs)
         super().__init__(field.value(), op)
 

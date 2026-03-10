@@ -35,7 +35,7 @@ class ExpressionOperatorsMixin:
         if isinstance(other, Expression):
             return self._make_binary(ElementWiseDivExpr(self, other))
         if isinstance(other, (float, ScalarExpression)):
-            return self._make_unary(ScaleExpr(self, 1.0 / other))
+            return self._make_unary(ScaleExpr(self, other))
         return NotImplemented
 
     def __neg__(self):

@@ -6,7 +6,7 @@ from discr import fd
 import space
 import tools.geometry
 
-n = 20
+n = 10
 grid = tools.geometry.StructuredGridND(shape=(n, n), spacing=(0.1, 0.1))
 domain = fd.domain.FDDomain(grid)
 discretization = fd.FDDiscretization(domain)
@@ -31,11 +31,13 @@ les.add_bcs((
     eq_space.bcs.neumann(right, 20.0)
 ))
 
-for time in eq_space.time.loop(0.0, 1.0, dt = 0.01):
+for time in eq_space.time.loop(0.0, 0.5, dt = 0.01):
     F.update(les.solve()).eval()
 
 import matplotlib.pyplot as plt
 u = F.past().get_current()
+u[0][domain.boundary(top).region] = 10
+u[0][domain.boundary(bot).region] = 0
 nx, ny = grid.shape
 dx, dy = grid.spacing
 x = np.linspace(0, (nx-1)*dx, nx)

@@ -47,7 +47,12 @@ class Stencil(StencilOperatorsMixin):
         self, field: np.ndarray, out: np.ndarray, region: Region
     ):
         for ax in range(field.ndim):
-            contrib = self.on_ax(ax)
-            for k, c in contrib.items():
-                contrib_region = region.shift(ax, k)
-                out[region] += c * field[contrib_region]
+            self.apply_to_region_on_ax(field, out, region, ax)
+
+    def apply_to_region_on_ax(
+        self, field: np.ndarray, out: np.ndarray, region: Region, ax: int
+    ):
+        contrib = self.on_ax(ax)
+        for k, c in contrib.items():
+            contrib_region = region.shift(ax, k)
+            out[region] += c * field[contrib_region]

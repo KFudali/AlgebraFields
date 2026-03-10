@@ -24,4 +24,4 @@ class FDDiscreteNeumann(FDDiscreteBC):
                 contrib = value
                 contribs[-offset] = contribs.get(-offset, 0.0) + contrib
                 contribs.pop(offset)
-                rhs[self.boundary.region] = -contrib * 2 * h * self.value
+                rhs[self.boundary.region] -= contrib * 2 * h * self.value
