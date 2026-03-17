@@ -1,8 +1,6 @@
 import numpy as np
-import copy
 from tools import region
 from .fd_discrete_bc import FDDiscreteBC, FDBoundary, FDStencilOperator
-import algebra
 
 class FDDiscreteDirichlet(FDDiscreteBC):
     def __init__(self, boundary: FDBoundary, value: float):
@@ -36,4 +34,8 @@ class FDDiscreteDirichlet(FDDiscreteBC):
             self.boundary.axis 
         )
         stencil.contribs[self.boundary.axis] = {0: 1}
+        rhs[self.boundary.region] = 0.0 
         rhs -= dirichlet_contrib
+    
+    def post_solve(self, result: np.ndarray):
+        result[self.boundary.region] = self.value

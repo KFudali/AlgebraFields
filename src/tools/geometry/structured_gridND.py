@@ -3,7 +3,11 @@ from ..region import Region, interior, boundary_region
 
 
 class StructuredGridND:
-    def __init__(self, shape: tuple[int, ...], spacing: tuple[float, ...]):
+    def __init__(
+        self, 
+        shape: tuple[int, ...], 
+        spacing: tuple[float, ...]
+    ):
         self._shape = tuple(shape)
         self._spacing = tuple(spacing)
         self._ndim = len(self._shape)
@@ -28,7 +32,14 @@ class StructuredGridND:
     @property 
     def interior(self) -> Region:
         return interior(self.shape, tuple(np.ones(self.ndim, dtype=int)))
-    
+
+    def points(self) -> np.ndarray:
+        axes = [
+            np.arange(self.shape[d]) * self.spacing[d]
+            for d in range(self.ndim)
+        ]
+        return np.meshgrid(*axes, indexing="ij")
+
     def boundary(self, ax: int, dir: int) -> Region:
         if dir not in (-1, 1):
             raise ValueError("direction must be -1 (left boundary) or 1 (right boundary)")

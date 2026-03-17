@@ -14,15 +14,6 @@ class LES(Equation):
         linop: algebra.Operator,
         rhs: algebra.Expression
     ):
-
-        # is_combined_wrapper = isinstance(linop.core, CombinedOperator)
-        # if not is_combined:
-        #     if is_combined_wrapper: 
-        #         linop = linop.core
-        #     else:
-        #         raise ValueError(
-        #             "LES only accepts CombinedOperator or CombinedOperator wrapper as Ax."
-        #         )
         self._linop = linop
         self._rhs = rhs
         self._bcs = list[DiscreteBC]()
@@ -39,7 +30,9 @@ class LES(Equation):
         Ax, rhs = self._assemble()
         def solve() -> np.ndarray:
             x, info = cg(Ax, rhs, maxiter=1000, rtol = 1e-6)
-            return x.reshape(self._linop.output_shape)
+            x = x.reshape(self._linop.output_shape)
+            [bc.post_solve(x[0]) for bc in self.bcs]
+            return x
         return algebra.expression.CallableExpression(self._linop.output_shape, solve)
     
     def _assemble(self) -> tuple[LinearOperator, np.ndarray]:

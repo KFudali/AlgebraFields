@@ -36,3 +36,6 @@ class FDDiscretization(Discretization[FDDomain]):
     def reshape(self, field_array: np.ndarray) -> np.ndarray:
         """Reshape a flattened array back into the grid shape."""
         return np.asarray(field_array).reshape(self.shape)
+    
+    def points(self) -> np.ndarray:
+        return self._domain.grid.points()

@@ -31,3 +31,6 @@ class Discretization(ABC, Generic[DomainType]):
 
     @abstractmethod
     def reshape(self, field_array: np.ndarray) -> np.ndarray: pass
+
+    @abstractmethod
+    def points(self) -> np.ndarray: pass

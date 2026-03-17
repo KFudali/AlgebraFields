@@ -17,6 +17,10 @@ class TimeSeries():
         self._dts.append(dt)
         self._time += dt
 
+    @property
+    def dts(self) -> list[float]: 
+        return self._dts
+
     def dt(self) -> float:
         return self._next_dt
 
